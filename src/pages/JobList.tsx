@@ -52,9 +52,11 @@ const JobList: React.FC = () => {
                 </p>
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="text-green-500 font-bold">¥5000/Hour</span>
+                    <span className="text-purple-300 font-bold">
+                      ¥5000/Hour
+                    </span>
                   </div>
-                  <button className="bg-green-500 text-white px-4 py-2 rounded">
+                  <button className="bg-purple-400 text-white px-4 py-2 rounded">
                     今すぐ応募
                   </button>
                 </div>
@@ -100,9 +102,9 @@ const JobList: React.FC = () => {
                 </p>
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="text-green-500 font-bold">$800/Hour</span>
+                    <span className="text-purple-300 font-bold">$800/Hour</span>
                   </div>
-                  <button className="bg-green-500 text-white px-4 py-2 rounded">
+                  <button className="bg-purple-400 text-white px-4 py-2 rounded">
                     今すぐ応募
                   </button>
                 </div>
@@ -139,9 +141,11 @@ const JobList: React.FC = () => {
                 </p>
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="text-green-500 font-bold">¥4000/Hour</span>
+                    <span className="text-purple-300 font-bold">
+                      ¥4000/Hour
+                    </span>
                   </div>
-                  <button className="bg-green-500 text-white px-4 py-2 rounded">
+                  <button className="bg-purple-400 text-white px-4 py-2 rounded">
                     今すぐ応募
                   </button>
                 </div>

@@ -43,7 +43,7 @@ const Login: React.FC = () => {
           {/* Login button with full width */}
           <Link
             to="/joblist"
-            className="w-full block bg-green-500 text-white py-2 rounded text-center hover:bg-green-600 focus:outline-none focus:bg-green-600"
+            className="w-full block bg-purple-400 text-white py-2 rounded text-center hover:text-purple-300 focus:outline-none focus:text-purple-300"
           >
             ログイン
           </Link>

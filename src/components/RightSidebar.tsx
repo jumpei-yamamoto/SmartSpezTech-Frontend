@@ -53,7 +53,7 @@ const RightSidebar: React.FC = () => {
               <p className="text-gray-600 text-xs">東京都, 日本</p>
             </div>
             <div className="text-right">
-              <p className="text-green-500 font-bold">時給 ¥3,000</p>
+              <p className="text-purple-300 font-bold">時給 ¥3,000</p>
               <p className="text-gray-500 text-xs">3分前</p>
             </div>
           </li>
@@ -63,7 +63,7 @@ const RightSidebar: React.FC = () => {
               <p className="text-gray-600 text-xs">大阪府, 日本</p>
             </div>
             <div className="text-right">
-              <p className="text-green-500 font-bold">時給 ¥4,500</p>
+              <p className="text-purple-300 font-bold">時給 ¥4,500</p>
               <p className="text-gray-500 text-xs">5分前</p>
             </div>
           </li>
@@ -73,7 +73,7 @@ const RightSidebar: React.FC = () => {
               <p className="text-gray-600 text-xs">福岡県, 日本</p>
             </div>
             <div className="text-right">
-              <p className="text-green-500 font-bold">時給 ¥3,800</p>
+              <p className="text-purple-300 font-bold">時給 ¥3,800</p>
               <p className="text-gray-500 text-xs">8分前</p>
             </div>
           </li>
@@ -83,7 +83,7 @@ const RightSidebar: React.FC = () => {
               <p className="text-gray-600 text-xs">北海道, 日本</p>
             </div>
             <div className="text-right">
-              <p className="text-green-500 font-bold">時給 ¥4,000</p>
+              <p className="text-purple-300 font-bold">時給 ¥4,000</p>
               <p className="text-gray-500 text-xs">12分前</p>
             </div>
           </li>

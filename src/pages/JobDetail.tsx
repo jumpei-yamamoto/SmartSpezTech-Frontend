@@ -33,7 +33,7 @@ const JobDetail: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                <button className="bg-green-500 text-white px-6 py-3 rounded-lg">
+                <button className="bg-purple-400 text-white px-6 py-3 rounded-lg">
                   今すぐ応募
                 </button>
               </div>
@@ -102,7 +102,7 @@ const JobDetail: React.FC = () => {
               {/* Apply and Share Section */}
               <div className="bg-white p-6 rounded-lg shadow-lg flex justify-between items-center">
                 <div className="flex space-x-4">
-                  <button className="bg-green-500 text-white px-6 py-2 rounded-lg">
+                  <button className="bg-purple-400 text-white px-6 py-2 rounded-lg">
                     今すぐ応募
                   </button>
                   <button className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg">

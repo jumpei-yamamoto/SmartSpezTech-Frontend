@@ -14,7 +14,7 @@ const JobFilter: React.FC = () => {
           </label>
           <select
             id="show"
-            className="px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
           >
             <option>10</option>
             <option>20</option>
@@ -28,7 +28,7 @@ const JobFilter: React.FC = () => {
           </label>
           <select
             id="sort"
-            className="px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
           >
             <option>掲載日が新しい</option>
             <option>掲載日が古い</option>

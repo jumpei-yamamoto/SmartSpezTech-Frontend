@@ -41,7 +41,7 @@ const EngineerDetail: React.FC = () => {
                   <span className="text-yellow-500 mr-1">★★★★★</span>
                   <span className="text-gray-700">(66)</span>
                 </div>
-                <div className="flex items-center bg-green-500 text-white px-3 py-1 rounded-lg">
+                <div className="flex items-center bg-purple-400 text-white px-3 py-1 rounded-lg">
                   <FaCheck />
                   <span className="ml-2">認証済み</span>
                 </div>
@@ -58,7 +58,7 @@ const EngineerDetail: React.FC = () => {
                 </button>
               </div>
             </div>
-            <button className="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center">
+            <button className="bg-purple-400 text-white px-6 py-3 rounded-lg flex items-center">
               <FaDownload />
               履歴書をダウンロード
             </button>
@@ -88,7 +88,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="block text-gray-700">HTML & CSS</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
-                          className="bg-green-500 h-2.5 rounded-full"
+                          className="bg-purple-400 h-2.5 rounded-full"
                           style={{ width: "78%" }}
                         ></div>
                       </div>
@@ -98,7 +98,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="block text-gray-700">JavaScript</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
-                          className="bg-green-500 h-2.5 rounded-full"
+                          className="bg-purple-400 h-2.5 rounded-full"
                           style={{ width: "88%" }}
                         ></div>
                       </div>
@@ -108,7 +108,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="block text-gray-700">データベース</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
-                          className="bg-green-500 h-2.5 rounded-full"
+                          className="bg-purple-400 h-2.5 rounded-full"
                           style={{ width: "62%" }}
                         ></div>
                       </div>
@@ -118,7 +118,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="block text-gray-700">React JS</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
-                          className="bg-green-500 h-2.5 rounded-full"
+                          className="bg-purple-400 h-2.5 rounded-full"
                           style={{ width: "92%" }}
                         ></div>
                       </div>
@@ -131,7 +131,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="block text-gray-700">Photoshop</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
-                          className="bg-green-500 h-2.5 rounded-full"
+                          className="bg-purple-400 h-2.5 rounded-full"
                           style={{ width: "29%" }}
                         ></div>
                       </div>
@@ -141,7 +141,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="block text-gray-700">Figma</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
-                          className="bg-green-500 h-2.5 rounded-full"
+                          className="bg-purple-400 h-2.5 rounded-full"
                           style={{ width: "20%" }}
                         ></div>
                       </div>
@@ -151,7 +151,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="block text-gray-700">Illustrator</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
-                          className="bg-green-500 h-2.5 rounded-full"
+                          className="bg-purple-400 h-2.5 rounded-full"
                           style={{ width: "65%" }}
                         ></div>
                       </div>
@@ -161,7 +161,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="block text-gray-700">Sketch</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
-                          className="bg-green-500 h-2.5 rounded-full"
+                          className="bg-purple-400 h-2.5 rounded-full"
                           style={{ width: "82%" }}
                         ></div>
                       </div>
@@ -243,10 +243,10 @@ const EngineerDetail: React.FC = () => {
                   シニアシステムエンジニアとして、期待以上の活躍をして頂きました。
                 </p>
                 <div className="flex justify-between items-center">
-                  <span className="text-green-500 font-bold">
+                  <span className="text-purple-300 font-bold">
                     ステータス: 完了
                   </span>
-                  <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg">
+                  <button className="text-purple-300 text-green-700 px-4 py-2 rounded-lg">
                     詳細を見る
                   </button>
                 </div>
@@ -284,7 +284,7 @@ const EngineerDetail: React.FC = () => {
                   <p className="text-gray-700">電話: (123) 456-7890</p>
                   <p className="text-gray-700">メール: contact@Evara.com</p>
                 </div>
-                <button className="bg-green-500 text-white w-full px-6 py-3 rounded-lg mt-6 flex items-center justify-center">
+                <button className="bg-purple-400 text-white w-full px-6 py-3 rounded-lg mt-6 flex items-center justify-center">
                   <FaEnvelope />
                   メッセージを送る
                 </button>

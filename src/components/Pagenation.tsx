@@ -6,7 +6,7 @@ const JobFilter: React.FC = () => {
       <button className="bg-gray-300 text-gray-700 px-4 py-2 rounded mx-1">
         1
       </button>
-      <button className="bg-green-500 text-white px-4 py-2 rounded mx-1">
+      <button className="bg-purple-400 text-white px-4 py-2 rounded mx-1">
         2
       </button>
       <button className="bg-gray-300 text-gray-700 px-4 py-2 rounded mx-1">

@@ -112,7 +112,7 @@ const Register: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full mt-6 bg-green-500 text-white py-2 rounded hover:bg-green-600 focus:outline-none focus:bg-green-600"
+            className="w-full mt-6 bg-purple-400 text-white py-2 rounded hover:text-purple-300 focus:outline-none focus:text-purple-300"
           >
             送信 & 登録
           </button>

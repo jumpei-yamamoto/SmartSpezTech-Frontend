@@ -44,7 +44,7 @@ const CompanyDetail: React.FC = () => {
                   「働くをシンプルにする」ことを目指します
                 </p>
               </div>
-              <button className="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center">
+              <button className="bg-purple-400 text-white px-6 py-3 rounded-lg flex items-center">
                 <FaPhoneAlt />
                 お問い合わせ
               </button>
@@ -151,10 +151,10 @@ const CompanyDetail: React.FC = () => {
                   私たちのプロジェクトはクライアントの期待を超えるものでした。革新的なソリューションを提供し、チーム全体が成長しました。
                 </p>
                 <div className="flex justify-between items-center">
-                  <span className="text-green-500 font-bold">
+                  <span className="text-purple-300 font-bold">
                     ステータス: 完了
                   </span>
-                  <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg">
+                  <button className="text-purple-300 text-green-700 px-4 py-2 rounded-lg">
                     詳細を見る
                   </button>
                 </div>
@@ -189,10 +189,10 @@ const CompanyDetail: React.FC = () => {
                   予定通りプロジェクトを完了させることができ、クライアントから高い評価をいただきました。
                 </p>
                 <div className="flex justify-between items-center">
-                  <span className="text-green-500 font-bold">
+                  <span className="text-purple-300 font-bold">
                     ステータス: 完了
                   </span>
-                  <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg">
+                  <button className="text-purple-300 text-green-700 px-4 py-2 rounded-lg">
                     詳細を見る
                   </button>
                 </div>
