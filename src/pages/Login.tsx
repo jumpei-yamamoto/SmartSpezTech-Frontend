@@ -70,6 +70,9 @@ const Login: React.FC = () => {
             Sign up with Google
           </button>
         </form>
+        <h2 className="text-red-500">
+          ログインでそのまま画面遷移します。内部もヘッダーのリンクやカードの一番目をクリックすると画面遷移します。
+        </h2>
       </div>
     </div>
   );
