@@ -10,8 +10,8 @@ const FilterSidebar: React.FC = () => {
   return (
     <aside className="bg-white p-6 rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold">Advance Filter</h2>
-        <button className="text-blue-500 hover:underline">Reset</button>
+        <h2 className="text-lg font-bold">詳細フィルター</h2>
+        <button className="text-blue-500 hover:underline">リセット</button>
       </div>
       <div className="space-y-4">
         <div>
@@ -19,16 +19,19 @@ const FilterSidebar: React.FC = () => {
             className="block text-gray-700 font-bold mb-2"
             htmlFor="location"
           >
-            Location
+            場所
           </label>
           <select
             id="location"
             className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <option>New York, US</option>
-            <option>San Francisco, US</option>
-            <option>Los Angeles, US</option>
-            <option>Chicago, US</option>
+            <option></option>
+            <option>東京</option>
+            <option>大阪</option>
+            <option>名古屋</option>
+            <option>福岡</option>
+            <option>海外</option>
+            <option>リモート</option>
           </select>
         </div>
         <div>
@@ -36,28 +39,29 @@ const FilterSidebar: React.FC = () => {
             className="block text-gray-700 font-bold mb-2"
             htmlFor="industry"
           >
-            Industry
+            業種
           </label>
           <select
             id="industry"
             className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <option>Software</option>
-            <option>Finance</option>
-            <option>Recruiting</option>
-            <option>Management</option>
-            <option>Advertising</option>
+            <option></option>
+            <option>IT・ソフトウェア</option>
+            <option>金融</option>
+            <option>人材採用</option>
+            <option>経営</option>
+            <option>広告</option>
           </select>
         </div>
         <button
           type="submit"
           className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 focus:outline-none focus:bg-green-600"
         >
-          Search
+          検索
         </button>
         {/* Industry Filter */}
         <div className="mt-6">
-          <h3 className="text-lg font-bold mb-4">Industry</h3>
+          <h3 className="text-lg font-bold mb-4">職種/ポジション</h3>
           <ul className="space-y-2">
             <li className="flex justify-between items-center">
               <label className="flex items-center">
@@ -66,7 +70,7 @@ const FilterSidebar: React.FC = () => {
                   className="form-checkbox text-green-500"
                   defaultChecked
                 />
-                <span className="ml-2 text-gray-700">All</span>
+                <span className="ml-2 text-gray-700">全て</span>
               </label>
               <span className="text-green-500 font-bold">180</span>
             </li>
@@ -76,7 +80,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">Software</span>
+                <span className="ml-2 text-gray-700">コンサル</span>
               </label>
               <span className="text-green-500 font-bold">12</span>
             </li>
@@ -86,7 +90,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">Finance</span>
+                <span className="ml-2 text-gray-700">エンジニア</span>
               </label>
               <span className="text-green-500 font-bold">23</span>
             </li>
@@ -96,7 +100,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">Recruiting</span>
+                <span className="ml-2 text-gray-700">設計</span>
               </label>
               <span className="text-green-500 font-bold">43</span>
             </li>
@@ -106,7 +110,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">Management</span>
+                <span className="ml-2 text-gray-700">開発</span>
               </label>
               <span className="text-green-500 font-bold">65</span>
             </li>
@@ -116,7 +120,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">Advertising</span>
+                <span className="ml-2 text-gray-700">テスト</span>
               </label>
               <span className="text-green-500 font-bold">76</span>
             </li>
@@ -124,21 +128,21 @@ const FilterSidebar: React.FC = () => {
         </div>
         {/* Salary Range Filter */}
         <div className="mt-6">
-          <h3 className="text-lg font-bold mb-4">Salary Range</h3>
+          <h3 className="text-lg font-bold mb-4">給与範囲(時給)</h3>
           <div className="flex items-center justify-between mb-4">
-            <span className="text-gray-700">$0</span>
+            <span className="text-gray-700">¥0</span>
             <input
               type="range"
               min="0"
-              max="500"
+              max="50000"
               value={salary}
               onChange={handleSalaryChange}
               className="w-full mx-4"
             />
-            <span className="text-gray-700">$500</span>
+            <span className="text-gray-700">¥50000</span>
           </div>
           <div className="text-center mb-4">
-            <span className="text-green-500 font-bold text-lg">{salary}</span>
+            <span className="text-green-500 font-bold text-lg">¥{salary}</span>
           </div>
           <ul className="space-y-2">
             <li className="flex justify-between items-center">
@@ -148,7 +152,7 @@ const FilterSidebar: React.FC = () => {
                   className="form-checkbox text-green-500"
                   defaultChecked
                 />
-                <span className="ml-2 text-gray-700">All</span>
+                <span className="ml-2 text-gray-700">全て</span>
               </label>
               <span className="text-green-500 font-bold">145</span>
             </li>
@@ -158,7 +162,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">$0k - $20k</span>
+                <span className="ml-2 text-gray-700">¥0 - ¥2000</span>
               </label>
               <span className="text-green-500 font-bold">56</span>
             </li>
@@ -168,7 +172,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">$20k - $40k</span>
+                <span className="ml-2 text-gray-700">¥2000 - ¥4000</span>
               </label>
               <span className="text-green-500 font-bold">37</span>
             </li>
@@ -178,7 +182,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">$40k - $60k</span>
+                <span className="ml-2 text-gray-700">¥4000 - ¥6000</span>
               </label>
               <span className="text-green-500 font-bold">75</span>
             </li>
@@ -188,7 +192,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">$60k - $80k</span>
+                <span className="ml-2 text-gray-700">¥6000 - ¥8000</span>
               </label>
               <span className="text-green-500 font-bold">98</span>
             </li>
@@ -198,7 +202,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">$80k - $100k</span>
+                <span className="ml-2 text-gray-700">¥8000 - ¥10000</span>
               </label>
               <span className="text-green-500 font-bold">14</span>
             </li>
@@ -208,7 +212,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">$100k - $200k</span>
+                <span className="ml-2 text-gray-700">¥10000 - ¥50000</span>
               </label>
               <span className="text-green-500 font-bold">25</span>
             </li>
@@ -216,7 +220,7 @@ const FilterSidebar: React.FC = () => {
         </div>
         {/* Popular Keyword Filter */}
         <div className="mt-6">
-          <h3 className="text-lg font-bold mb-4">Popular Keyword</h3>
+          <h3 className="text-lg font-bold mb-4">人気のキーワード</h3>
           <ul className="space-y-2">
             <li className="flex justify-between items-center">
               <label className="flex items-center">
@@ -225,7 +229,7 @@ const FilterSidebar: React.FC = () => {
                   className="form-checkbox text-green-500"
                   defaultChecked
                 />
-                <span className="ml-2 text-gray-700">Software</span>
+                <span className="ml-2 text-gray-700">AI</span>
               </label>
               <span className="text-green-500 font-bold">24</span>
             </li>
@@ -235,7 +239,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">Developer</span>
+                <span className="ml-2 text-gray-700">SIer</span>
               </label>
               <span className="text-green-500 font-bold">45</span>
             </li>
@@ -253,7 +257,7 @@ const FilterSidebar: React.FC = () => {
         </div>
         {/* Position Filter */}
         <div className="mt-6">
-          <h3 className="text-lg font-bold mb-4">Position</h3>
+          <h3 className="text-lg font-bold mb-4">役職</h3>
           <ul className="space-y-2">
             <li className="flex justify-between items-center">
               <label className="flex items-center">
@@ -261,7 +265,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">Senior</span>
+                <span className="ml-2 text-gray-700">シニア</span>
               </label>
               <span className="text-green-500 font-bold">12</span>
             </li>
@@ -272,7 +276,7 @@ const FilterSidebar: React.FC = () => {
                   className="form-checkbox text-green-500"
                   defaultChecked
                 />
-                <span className="ml-2 text-gray-700">Junior</span>
+                <span className="ml-2 text-gray-700">ジュニア</span>
               </label>
               <span className="text-green-500 font-bold">35</span>
             </li>
@@ -282,7 +286,7 @@ const FilterSidebar: React.FC = () => {
                   type="checkbox"
                   className="form-checkbox text-green-500"
                 />
-                <span className="ml-2 text-gray-700">Fresher</span>
+                <span className="ml-2 text-gray-700">新人</span>
               </label>
               <span className="text-green-500 font-bold">56</span>
             </li>
@@ -291,19 +295,19 @@ const FilterSidebar: React.FC = () => {
       </div>
       {/* Experience Level Filter */}
       <div className="mt-6">
-        <h3 className="text-lg font-bold mb-4">Experience Level</h3>
+        <h3 className="text-lg font-bold mb-4">経験レベル</h3>
         <ul className="space-y-2">
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">Internship</span>
+              <span className="ml-2 text-gray-700">インターンシップ</span>
             </label>
             <span className="text-green-500 font-bold">56</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">Entry Level</span>
+              <span className="ml-2 text-gray-700">エントリー</span>
             </label>
             <span className="text-green-500 font-bold">87</span>
           </li>
@@ -314,28 +318,28 @@ const FilterSidebar: React.FC = () => {
                 className="form-checkbox text-green-500"
                 defaultChecked
               />
-              <span className="ml-2 text-gray-700">Associate</span>
+              <span className="ml-2 text-gray-700">アソシエイト</span>
             </label>
             <span className="text-green-500 font-bold">24</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">Mid Level</span>
+              <span className="ml-2 text-gray-700">ミドル</span>
             </label>
             <span className="text-green-500 font-bold">45</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">Director</span>
+              <span className="ml-2 text-gray-700">ディレクター</span>
             </label>
             <span className="text-green-500 font-bold">76</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">Executive</span>
+              <span className="ml-2 text-gray-700">エグゼクティブ</span>
             </label>
             <span className="text-green-500 font-bold">89</span>
           </li>
@@ -344,12 +348,12 @@ const FilterSidebar: React.FC = () => {
 
       {/* Onsite/Remote Filter */}
       <div className="mt-6">
-        <h3 className="text-lg font-bold mb-4">Onsite/Remote</h3>
+        <h3 className="text-lg font-bold mb-4">出社/リモート</h3>
         <ul className="space-y-2">
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">On-site</span>
+              <span className="ml-2 text-gray-700">出社</span>
             </label>
             <span className="text-green-500 font-bold">12</span>
           </li>
@@ -360,14 +364,14 @@ const FilterSidebar: React.FC = () => {
                 className="form-checkbox text-green-500"
                 defaultChecked
               />
-              <span className="ml-2 text-gray-700">Remote</span>
+              <span className="ml-2 text-gray-700">リモート</span>
             </label>
             <span className="text-green-500 font-bold">65</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">Hybrid</span>
+              <span className="ml-2 text-gray-700">ハイブリッド</span>
             </label>
             <span className="text-green-500 font-bold">58</span>
           </li>
@@ -375,7 +379,7 @@ const FilterSidebar: React.FC = () => {
       </div>
       {/* Job Posted Filter */}
       <div className="mt-6">
-        <h3 className="text-lg font-bold mb-4">Job Posted</h3>
+        <h3 className="text-lg font-bold mb-4">求人掲載日</h3>
         <ul className="space-y-2">
           <li className="flex justify-between items-center">
             <label className="flex items-center">
@@ -384,28 +388,28 @@ const FilterSidebar: React.FC = () => {
                 className="form-checkbox text-green-500"
                 defaultChecked
               />
-              <span className="ml-2 text-gray-700">All</span>
+              <span className="ml-2 text-gray-700">全て</span>
             </label>
             <span className="text-green-500 font-bold">78</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">1 day</span>
+              <span className="ml-2 text-gray-700">1日以内</span>
             </label>
             <span className="text-green-500 font-bold">65</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">7 days</span>
+              <span className="ml-2 text-gray-700">7日以内</span>
             </label>
             <span className="text-green-500 font-bold">24</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">30 days</span>
+              <span className="ml-2 text-gray-700">30日以内</span>
             </label>
             <span className="text-green-500 font-bold">56</span>
           </li>
@@ -414,12 +418,12 @@ const FilterSidebar: React.FC = () => {
 
       {/* Job Type Filter */}
       <div className="mt-6">
-        <h3 className="text-lg font-bold mb-4">Job type</h3>
+        <h3 className="text-lg font-bold mb-4">稼働</h3>
         <ul className="space-y-2">
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">Full Time</span>
+              <span className="ml-2 text-gray-700">フルタイム</span>
             </label>
             <span className="text-green-500 font-bold">25</span>
           </li>
@@ -430,21 +434,21 @@ const FilterSidebar: React.FC = () => {
                 className="form-checkbox text-green-500"
                 defaultChecked
               />
-              <span className="ml-2 text-gray-700">Part Time</span>
+              <span className="ml-2 text-gray-700">週2以下</span>
             </label>
             <span className="text-green-500 font-bold">64</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">Remote Jobs</span>
+              <span className="ml-2 text-gray-700">週3-4</span>
             </label>
             <span className="text-green-500 font-bold">78</span>
           </li>
           <li className="flex justify-between items-center">
             <label className="flex items-center">
               <input type="checkbox" className="form-checkbox text-green-500" />
-              <span className="ml-2 text-gray-700">Freelancer</span>
+              <span className="ml-2 text-gray-700">フレックス</span>
             </label>
             <span className="text-green-500 font-bold">97</span>
           </li>

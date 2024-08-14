@@ -1,105 +1,100 @@
 import React from "react";
 import FilterSidebar from "../components/FilterSidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import Pagenation from "../components/Pagenation";
 import { Link } from "react-router-dom";
 
 const companies = [
   {
-    name: "Car Toys",
-    rating: 66,
-    location: "New York, US",
-    jobsOpen: 12,
+    name: "ソフトバンク",
+    rating: 82,
+    location: "東京都, 日本",
+    jobsOpen: 10,
   },
   {
-    name: "Carols Daughter",
-    rating: 18,
-    location: "London, UK",
-    jobsOpen: 25,
+    name: "楽天",
+    rating: 75,
+    location: "大阪府, 日本",
+    jobsOpen: 22,
   },
   {
-    name: "Amazon",
-    rating: 52,
-    location: "Tokyo, Japan",
-    jobsOpen: 54,
+    name: "トヨタ",
+    rating: 90,
+    location: "名古屋市, 日本",
+    jobsOpen: 18,
   },
   {
-    name: "Baseball Savings",
+    name: "ニコン",
+    rating: 60,
+    location: "東京都, 日本",
+    jobsOpen: 5,
+  },
+  {
+    name: "パナソニック",
+    rating: 78,
+    location: "大阪府, 日本",
+    jobsOpen: 30,
+  },
+  {
+    name: "日産",
     rating: 85,
-    location: "Chicago, US",
-    jobsOpen: 6,
+    location: "横浜市, 日本",
+    jobsOpen: 20,
   },
   {
-    name: "Ashford",
-    rating: 25,
-    location: "Toronto, Italia",
-    jobsOpen: 67,
-  },
-  {
-    name: "Callaway Golf",
-    rating: 34,
-    location: "San Francisco, US",
-    jobsOpen: 45,
-  },
-  {
-    name: "Car Toys",
-    rating: 66,
-    location: "New York, US",
+    name: "ファーストリテイリング",
+    rating: 88,
+    location: "東京都, 日本",
     jobsOpen: 12,
   },
   {
-    name: "Carols Daughter",
-    rating: 18,
-    location: "London, UK",
+    name: "サントリー",
+    rating: 70,
+    location: "京都府, 日本",
+    jobsOpen: 15,
+  },
+  {
+    name: "日立製作所",
+    rating: 80,
+    location: "東京都, 日本",
+    jobsOpen: 45,
+  },
+  {
+    name: "キヤノン",
+    rating: 65,
+    location: "東京都, 日本",
     jobsOpen: 25,
   },
   {
-    name: "Amazon",
-    rating: 52,
-    location: "Tokyo, Japan",
-    jobsOpen: 54,
+    name: "三菱電機",
+    rating: 82,
+    location: "名古屋市, 日本",
+    jobsOpen: 35,
   },
   {
-    name: "Baseball Savings",
+    name: "セコム",
+    rating: 60,
+    location: "東京都, 日本",
+    jobsOpen: 18,
+  },
+  {
+    name: "デンソー",
     rating: 85,
-    location: "Chicago, US",
-    jobsOpen: 6,
+    location: "愛知県, 日本",
+    jobsOpen: 28,
   },
   {
-    name: "Ashford",
-    rating: 25,
-    location: "Toronto, Italia",
-    jobsOpen: 67,
+    name: "オリックス",
+    rating: 78,
+    location: "大阪府, 日本",
+    jobsOpen: 22,
   },
   {
-    name: "Callaway Golf",
-    rating: 34,
-    location: "San Francisco, US",
-    jobsOpen: 45,
-  },
-  {
-    name: "Callaway Golf",
-    rating: 34,
-    location: "San Francisco, US",
-    jobsOpen: 45,
-  },
-  {
-    name: "Car Toys",
-    rating: 66,
-    location: "New York, US",
-    jobsOpen: 12,
-  },
-  {
-    name: "Carols Daughter",
-    rating: 18,
-    location: "London, UK",
-    jobsOpen: 25,
-  },
-  {
-    name: "Amazon",
-    rating: 52,
-    location: "Tokyo, Japan",
-    jobsOpen: 54,
+    name: "アステラス製薬",
+    rating: 92,
+    location: "東京都, 日本",
+    jobsOpen: 50,
   },
 ];
 
@@ -154,7 +149,7 @@ const CompanyList: React.FC = () => {
                         href="#"
                         className="block text-center text-blue-500 hover:underline"
                       >
-                        {companies[index].jobsOpen} Jobs Open
+                        {companies[index].jobsOpen} 件の求人
                       </a>
                     </>
                   )}
@@ -168,19 +163,7 @@ const CompanyList: React.FC = () => {
         </div>
       </main>
 
-      <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="mb-4">Subscribe to our newsletter</p>
-          <input
-            type="email"
-            placeholder="Enter your email here"
-            className="w-full max-w-xs px-4 py-2 border rounded mb-4"
-          />
-          <button className="bg-green-500 text-white px-4 py-2 rounded">
-            Subscribe
-          </button>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

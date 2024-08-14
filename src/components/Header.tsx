@@ -5,35 +5,32 @@ const Header: React.FC = () => {
   return (
     <header className="bg-white shadow">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <div className="text-lg font-bold">Job LIST</div>
+        <div className="text-lg font-bold">SmartSpezTech</div>
         <nav className="flex space-x-4">
-          <Link to={"/"} className="text-gray-700 hover:text-gray-900">
-            Home
+          <Link to={"/joblist"} className="text-gray-700 hover:text-gray-900">
+            ホーム
           </Link>
           <Link to={"/joblist"} className="text-gray-700 hover:text-gray-900">
-            Find a Job
+            案件を探す
           </Link>
           <Link
             to={"/companylist"}
             className="text-gray-700 hover:text-gray-900"
           >
-            Companies
+            会社一覧
           </Link>
           <Link
             to={"/engineerlist"}
             className="text-gray-700 hover:text-gray-900"
           >
-            Engineers
+            エンジニア一覧
           </Link>
           <Link to={"/jobdetail"} className="text-gray-700 hover:text-gray-900">
-            Pages
+            AI補助ツール
           </Link>
-          <a href="#" className="text-gray-700 hover:text-gray-900">
-            Blog
-          </a>
         </nav>
-        <button className="bg-green-500 text-white px-4 py-2 rounded">
-          Sign in
+        <button className="bg-purple-400 text-white px-4 py-2 rounded">
+          ログイン
         </button>
       </div>
     </header>

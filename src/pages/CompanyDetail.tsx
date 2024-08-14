@@ -1,5 +1,7 @@
 import React from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
+import RightSidebar from "../components/RightSidebar";
 import Pagenation from "../components/Pagenation";
 import {
   FaMapMarkerAlt,
@@ -32,32 +34,32 @@ const CompanyDetail: React.FC = () => {
             <div className="p-6 flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  AliThemes
+                  株式会社テクノロジーズ
                 </h2>
                 <div className="flex items-center text-gray-600 mb-2">
                   <FaMapMarkerAlt />
-                  <span>New York, US</span>
+                  <span>東京都, 日本</span>
                 </div>
                 <p className="text-lg text-gray-700 mb-2">
-                  Our Mission to make working life simple
+                  「働くをシンプルにする」ことを目指します
                 </p>
               </div>
               <button className="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center">
                 <FaPhoneAlt />
-                Contact us
+                お問い合わせ
               </button>
             </div>
           </div>
 
           <div className="flex justify-start space-x-4 mb-8">
             <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg">
-              About us
+              会社概要
             </button>
             <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg">
-              Recruitments
+              募集職種
             </button>
             <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg">
-              People
+              社員紹介
             </button>
           </div>
 
@@ -65,24 +67,62 @@ const CompanyDetail: React.FC = () => {
             {/* Main Content */}
             <section className="md:col-span-2 space-y-8">
               <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-lg font-bold mb-4">
-                  Employment Information
-                </h3>
+                <h3 className="text-lg font-bold mb-4">雇用情報</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Employment Information Details */}
+                  <div>
+                    <h4 className="font-bold text-gray-700">業界</h4>
+                    <p>IT / ソフトウェア開発</p>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-700">雇用形態</h4>
+                    <p>正社員</p>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-700">給与</h4>
+                    <p>年収 500万円 〜 700万円</p>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-700">経験年数</h4>
+                    <p>3年以上</p>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-700">勤務地</h4>
+                    <p>東京都港区（リモート可）</p>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-700">最終更新日</h4>
+                    <p>2024年8月10日</p>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-700">応募締切</h4>
+                    <p>2024年9月1日</p>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-700">募集人数</h4>
+                    <p>2名</p>
+                  </div>
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-lg shadow-lg">
                 <h3 className="text-lg font-bold mb-4">
-                  Essential Knowledge, Skills, and Experience
+                  必須知識、スキル、経験
                 </h3>
                 <ul className="list-disc list-inside space-y-2">
-                  {/* Knowledge, Skills, and Experience List */}
+                  <li>React、TypeScriptを用いたフロントエンド開発の実務経験</li>
+                  <li>PythonおよびDjangoを用いたバックエンド開発の知識</li>
+                  <li>REST APIの設計・開発経験</li>
+                  <li>Gitを使用したバージョン管理の実務経験</li>
+                  <li>アジャイル開発におけるチームでの協働経験</li>
+                  <li>新しい技術の習得に対する高い意欲と柔軟性</li>
+                  <li>ビジネスレベルの日本語力と基本的な英語力</li>
+                  <li>プロジェクト管理ツール（Jira、Trelloなど）の使用経験</li>
+                  <li>セキュリティベストプラクティスに関する知識</li>
+                  <li>UI/UXデザインに関する基本的な理解と実務経験</li>
                 </ul>
               </div>
               {/* Work History Section */}
-              <h2 className="text-xl font-bold mb-4">Work History</h2>
+              <h2 className="text-xl font-bold mb-4">実績紹介</h2>
               <div className="bg-white p-6 rounded-lg shadow-lg">
                 <div className="flex items-center mb-4">
                   <img
@@ -91,30 +131,31 @@ const CompanyDetail: React.FC = () => {
                     className="w-12 h-12 rounded-full mr-4"
                   />
                   <div>
-                    <h4 className="text-lg font-bold">Quora JSC</h4>
+                    <h4 className="text-lg font-bold">クオラ株式会社</h4>
                     <div className="flex items-center text-gray-600">
                       <FaMapMarkerAlt />
-                      <span>New York, US</span>
+                      <span>東京都, 日本</span>
                     </div>
                   </div>
                 </div>
                 <h3 className="text-lg font-bold mb-2">
-                  Senior System Engineer
+                  シニアシステムエンジニア
                 </h3>
                 <div className="flex items-center text-gray-600 mb-2">
                   <FaBriefcase />
-                  <span className="ml-2">Part time</span>
+                  <span className="ml-2">パートタイム</span>
                   <FaClock />
-                  <span className="ml-2">5 days ago</span>
+                  <span className="ml-2">5日前</span>
                 </div>
                 <p className="text-gray-700 mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Recusandae architecto eveniet, dolor quo repellendus pariatur.
+                  私たちのプロジェクトはクライアントの期待を超えるものでした。革新的なソリューションを提供し、チーム全体が成長しました。
                 </p>
                 <div className="flex justify-between items-center">
-                  <span className="text-green-500 font-bold">Status: Done</span>
+                  <span className="text-green-500 font-bold">
+                    ステータス: 完了
+                  </span>
                   <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg">
-                    View Details
+                    詳細を見る
                   </button>
                 </div>
               </div>
@@ -128,30 +169,31 @@ const CompanyDetail: React.FC = () => {
                     className="w-12 h-12 rounded-full mr-4"
                   />
                   <div>
-                    <h4 className="text-lg font-bold">Quora JSC</h4>
+                    <h4 className="text-lg font-bold">株式会社◯◯</h4>
                     <div className="flex items-center text-gray-600">
                       <FaMapMarkerAlt />
-                      <span>New York, US</span>
+                      <span>東京都, 日本</span>
                     </div>
                   </div>
                 </div>
                 <h3 className="text-lg font-bold mb-2">
-                  Senior System Engineer
+                  シニアシステムエンジニア
                 </h3>
                 <div className="flex items-center text-gray-600 mb-2">
                   <FaBriefcase />
-                  <span className="ml-2">Part time</span>
+                  <span className="ml-2">フルタイム</span>
                   <FaClock />
-                  <span className="ml-2">5 days ago</span>
+                  <span className="ml-2">1年前</span>
                 </div>
                 <p className="text-gray-700 mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Recusandae architecto eveniet, dolor quo repellendus pariatur.
+                  予定通りプロジェクトを完了させることができ、クライアントから高い評価をいただきました。
                 </p>
                 <div className="flex justify-between items-center">
-                  <span className="text-green-500 font-bold">Status: Done</span>
+                  <span className="text-green-500 font-bold">
+                    ステータス: 完了
+                  </span>
                   <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg">
-                    View Details
+                    詳細を見る
                   </button>
                 </div>
               </div>
@@ -161,55 +203,12 @@ const CompanyDetail: React.FC = () => {
 
             {/* Right Sidebar */}
             <aside className="md:col-span-1">
-              <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-xl font-bold mb-4">Overview</h3>
-                <ul className="space-y-4">
-                  <li className="flex items-center text-gray-700">
-                    <FaCheck />
-                    <span>Experience: 12 years</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <FaCheck />
-                    <span>Expected Salary: $26k - $30k</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <FaCheck />
-                    <span>Language: English, German</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <FaCheck />
-                    <span>Education Level: Master Degree</span>
-                  </li>
-                </ul>
-                <div className="mt-8">
-                  <p className="text-gray-700">
-                    205 North Michigan Avenue, Suite 810 Chicago, 60601, USA
-                  </p>
-                  <p className="text-gray-700">Phone: (123) 456-7890</p>
-                  <p className="text-gray-700">Email: contact@Evara.com</p>
-                </div>
-                <button className="bg-green-500 text-white w-full px-6 py-3 rounded-lg mt-6 flex items-center justify-center">
-                  <FaEnvelope />
-                  Send Message
-                </button>
-              </div>
+              <RightSidebar />
             </aside>
           </div>
         </main>
 
-        <footer className="bg-black text-white py-8">
-          <div className="container mx-auto px-4 text-center">
-            <p className="mb-4">Subscribe to our newsletter</p>
-            <input
-              type="email"
-              placeholder="Enter your email here"
-              className="w-full max-w-xs px-4 py-2 border rounded mb-4"
-            />
-            <button className="bg-green-500 text-white px-4 py-2 rounded">
-              Subscribe
-            </button>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </IconContext.Provider>
   );

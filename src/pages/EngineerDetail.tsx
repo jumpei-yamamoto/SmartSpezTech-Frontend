@@ -1,5 +1,6 @@
 import React from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import Pagenation from "../components/Pagenation";
 import {
   FaDownload,
@@ -26,14 +27,14 @@ const EngineerDetail: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg mb-8 flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Steven Jobs
+                佐藤 太郎
               </h2>
               <div className="flex items-center text-gray-600 mb-2">
                 <FaMapMarkerAlt />
-                <span>New York, US</span>
+                <span>東京都, 日本</span>
               </div>
               <h3 className="text-lg text-gray-700 mb-2">
-                UI/UX Designer. Front end Developer
+                UI/UX デザイナー・フロントエンド開発者
               </h3>
               <div className="flex items-center space-x-4 mb-4">
                 <div className="flex items-center">
@@ -42,53 +43,47 @@ const EngineerDetail: React.FC = () => {
                 </div>
                 <div className="flex items-center bg-green-500 text-white px-3 py-1 rounded-lg">
                   <FaCheck />
-                  <span className="ml-2">Verified</span>
+                  <span className="ml-2">認証済み</span>
                 </div>
               </div>
               <div className="flex space-x-4">
                 <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg">
-                  Short Bio
+                  短いプロフィール
                 </button>
                 <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg">
-                  Skills
+                  スキル
                 </button>
                 <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg">
-                  Working Experience
+                  実務経験
                 </button>
               </div>
             </div>
             <button className="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center">
               <FaDownload />
-              Download CV
+              履歴書をダウンロード
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Main Content */}
+            {/* メインコンテンツ */}
             <section className="md:col-span-2 space-y-8">
               <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-xl font-bold mb-4">About Me</h3>
+                <h3 className="text-xl font-bold mb-4">自己紹介</h3>
                 <p className="text-gray-700 mb-4">
-                  Hello there! My name is Alan Walker. I am a graphic designer,
-                  and I’m very passionate and dedicated to my work. With 20
-                  years experience as a professional a graphic designer, I have
-                  acquired the skills and knowledge necessary to make your
-                  project a success.
+                  こんにちは！私の名前は佐藤太郎です。私はグラフィックデザイナーで、仕事に非常に情熱を持っています。20年以上のプロのグラフィックデザインの経験を持ち、あなたのプロジェクトを成功させるために必要なスキルと知識を習得しています。
                 </p>
                 <p className="text-gray-700">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Debitis illum fuga eveniet. Deleniti asperiores, commodi quae
-                  ipsum quas est itaque, ipsa, dolore beatae voluptates nemo
-                  blanditiis iste eius officia minus. Id nisi, consequuntur sunt
-                  impedit quidem, vitae mollitia!
+                  私の経験により、クライアントのニーズに応じたクリエイティブなデザインソリューションを提供できます。
                 </p>
               </div>
 
               <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-xl font-bold mb-4">Professional Skills</h3>
+                <h3 className="text-xl font-bold mb-4">
+                  プロフェッショナルスキル
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="text-lg font-bold mb-2">Programming</h4>
+                    <h4 className="text-lg font-bold mb-2">プログラミング</h4>
                     <div className="mb-4">
                       <span className="block text-gray-700">HTML & CSS</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
@@ -100,7 +95,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="text-sm text-gray-600">78%</span>
                     </div>
                     <div className="mb-4">
-                      <span className="block text-gray-700">Javascript</span>
+                      <span className="block text-gray-700">JavaScript</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
                           className="bg-green-500 h-2.5 rounded-full"
@@ -110,7 +105,7 @@ const EngineerDetail: React.FC = () => {
                       <span className="text-sm text-gray-600">88%</span>
                     </div>
                     <div className="mb-4">
-                      <span className="block text-gray-700">Database</span>
+                      <span className="block text-gray-700">データベース</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                         <div
                           className="bg-green-500 h-2.5 rounded-full"
@@ -131,7 +126,7 @@ const EngineerDetail: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold mb-2">Design</h4>
+                    <h4 className="text-lg font-bold mb-2">デザイン</h4>
                     <div className="mb-4">
                       <span className="block text-gray-700">Photoshop</span>
                       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
@@ -176,63 +171,50 @@ const EngineerDetail: React.FC = () => {
                 </div>
               </div>
 
-              {/* Work Experience Section */}
+              {/* 実務経験 */}
               <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-xl font-bold mb-4">Work Experience</h3>
+                <h3 className="text-xl font-bold mb-4">実務経験</h3>
                 <ul className="list-disc pl-5 space-y-2 text-gray-700">
                   <li>
-                    A portfolio demonstrating well thought through and polished
-                    end to end customer journeys
+                    エンドツーエンドのカスタマージャーニーを慎重に考慮し、洗練されたポートフォリオ
                   </li>
                   <li>
-                    5+ years of industry experience in interactive design and /
-                    or visual design
+                    インタラクティブデザインおよび/またはビジュアルデザインで5年以上の業界経験
                   </li>
-                  <li>Excellent interpersonal skills</li>
+                  <li>優れた対人スキル</li>
                   <li>
-                    Aware of trends in mobile, communications, and collaboration
-                  </li>
-                  <li>
-                    Ability to create highly polished design prototypes,
-                    mockups, and other communication artifacts
+                    モバイル、コミュニケーション、およびコラボレーションのトレンドを理解
                   </li>
                   <li>
-                    The ability to scope and estimate efforts accurately and
-                    prioritize tasks and goals independently
-                  </li>
-                  <li>History of impacting shipping products with your work</li>
-                  <li>
-                    A Bachelor’s Degree in Design (or related field) or
-                    equivalent professional experience
+                    高度に洗練されたデザインプロトタイプ、モックアップ、その他のコミュニケーションアーティファクトを作成する能力
                   </li>
                   <li>
-                    Proficiency in a variety of design tools such as Figma,
-                    Photoshop, Illustrator, and Sketch
+                    努力を正確にスコープし、見積もり、タスクや目標を独立して優先順位付けする能力
+                  </li>
+                  <li>あなたの仕事で製品の出荷に影響を与えた履歴</li>
+                  <li>
+                    デザイン（または関連分野）の学士号または同等の専門経験
+                  </li>
+                  <li>
+                    Figma、Photoshop、Illustrator、Sketchなどの多様なデザインツールに熟練
                   </li>
                 </ul>
               </div>
 
-              {/* Education Section */}
+              {/* 教育 */}
               <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-xl font-bold mb-4">Education</h3>
+                <h3 className="text-xl font-bold mb-4">教育</h3>
                 <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                  <li>Necessitatibus quibusdam facilis</li>
-                  <li>
-                    Velit unde aliquam et voluptas reiciendis non sapiente
-                    labore
-                  </li>
-                  <li>Commodi quae ipsum quas est itaque</li>
-                  <li>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                  </li>
-                  <li>
-                    Deleniti asperiores blanditiis nihil quia officiis dolor
-                  </li>
+                  <li>必須の知識とスキルを提供する教育プログラム</li>
+                  <li>現代のデザインとテクノロジーに関連する深い理解を提供</li>
+                  <li>業界に関連する認定を取得</li>
+                  <li>クリエイティブな問題解決能力を発展させるカリキュラム</li>
+                  <li>デザインの歴史と現代のデザイン原則に関する深い洞察</li>
                 </ul>
               </div>
 
               {/* Work History Section */}
-              <h2 className="text-xl font-bold mb-4">Work History</h2>
+              <h2 className="text-xl font-bold mb-4">職務経歴</h2>
               <div className="bg-white p-6 rounded-lg shadow-lg">
                 <div className="flex items-center mb-4">
                   <img
@@ -244,192 +226,74 @@ const EngineerDetail: React.FC = () => {
                     <h4 className="text-lg font-bold">Quora JSC</h4>
                     <div className="flex items-center text-gray-600">
                       <FaMapMarkerAlt />
-                      <span>New York, US</span>
+                      <span>東京都, 日本</span>
                     </div>
                   </div>
                 </div>
                 <h3 className="text-lg font-bold mb-2">
-                  Senior System Engineer
+                  シニアシステムエンジニア
                 </h3>
                 <div className="flex items-center text-gray-600 mb-2">
                   <FaBriefcase />
-                  <span className="ml-2">Part time</span>
+                  <span className="ml-2">パートタイム</span>
                   <FaClock />
-                  <span className="ml-2">5 days ago</span>
+                  <span className="ml-2">5日前</span>
                 </div>
                 <p className="text-gray-700 mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Recusandae architecto eveniet, dolor quo repellendus pariatur.
+                  シニアシステムエンジニアとして、期待以上の活躍をして頂きました。
                 </p>
                 <div className="flex justify-between items-center">
-                  <span className="text-green-500 font-bold">Status: Done</span>
+                  <span className="text-green-500 font-bold">
+                    ステータス: 完了
+                  </span>
                   <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg">
-                    View Details
+                    詳細を見る
                   </button>
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow-lg">
-                <div className="flex items-center mb-4">
-                  <img
-                    src="https://via.placeholder.com/50"
-                    alt="Company Logo"
-                    className="w-12 h-12 rounded-full mr-4"
-                  />
-                  <div>
-                    <h4 className="text-lg font-bold">Quora JSC</h4>
-                    <div className="flex items-center text-gray-600">
-                      <FaMapMarkerAlt />
-                      <span>New York, US</span>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold mb-2">
-                  Senior System Engineer
-                </h3>
-                <div className="flex items-center text-gray-600 mb-2">
-                  <FaBriefcase />
-                  <span className="ml-2">Part time</span>
-                  <FaClock />
-                  <span className="ml-2">5 days ago</span>
-                </div>
-                <p className="text-gray-700 mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Recusandae architecto eveniet, dolor quo repellendus pariatur.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-green-500 font-bold">Status: Done</span>
-                  <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg">
-                    View Details
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-lg">
-                <div className="flex items-center mb-4">
-                  <img
-                    src="https://via.placeholder.com/50"
-                    alt="Company Logo"
-                    className="w-12 h-12 rounded-full mr-4"
-                  />
-                  <div>
-                    <h4 className="text-lg font-bold">Quora JSC</h4>
-                    <div className="flex items-center text-gray-600">
-                      <FaMapMarkerAlt />
-                      <span>New York, US</span>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold mb-2">
-                  Senior System Engineer
-                </h3>
-                <div className="flex items-center text-gray-600 mb-2">
-                  <FaBriefcase />
-                  <span className="ml-2">Part time</span>
-                  <FaClock />
-                  <span className="ml-2">5 days ago</span>
-                </div>
-                <p className="text-gray-700 mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Recusandae architecto eveniet, dolor quo repellendus pariatur.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-green-500 font-bold">Status: Done</span>
-                  <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg">
-                    View Details
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-lg">
-                <div className="flex items-center mb-4">
-                  <img
-                    src="https://via.placeholder.com/50"
-                    alt="Company Logo"
-                    className="w-12 h-12 rounded-full mr-4"
-                  />
-                  <div>
-                    <h4 className="text-lg font-bold">Quora JSC</h4>
-                    <div className="flex items-center text-gray-600">
-                      <FaMapMarkerAlt />
-                      <span>New York, US</span>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold mb-2">
-                  Senior System Engineer
-                </h3>
-                <div className="flex items-center text-gray-600 mb-2">
-                  <FaBriefcase />
-                  <span className="ml-2">Part time</span>
-                  <FaClock />
-                  <span className="ml-2">5 days ago</span>
-                </div>
-                <p className="text-gray-700 mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Recusandae architecto eveniet, dolor quo repellendus pariatur.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-green-500 font-bold">Status: Done</span>
-                  <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg">
-                    View Details
-                  </button>
-                </div>
-              </div>
               <Pagenation />
             </section>
 
-            {/* Right Sidebar */}
+            {/* 右サイドバー */}
             <aside className="md:col-span-1">
               <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-xl font-bold mb-4">Overview</h3>
+                <h3 className="text-xl font-bold mb-4">概要</h3>
                 <ul className="space-y-4">
                   <li className="flex items-center text-gray-700">
                     <FaCheck />
-                    <span>Experience: 12 years</span>
+                    <span>経験: 12年</span>
                   </li>
                   <li className="flex items-center text-gray-700">
                     <FaCheck />
-                    <span>Expected Salary: $26k - $30k</span>
+                    <span>希望年収: ¥3,000,000 - ¥3,500,000</span>
                   </li>
                   <li className="flex items-center text-gray-700">
                     <FaCheck />
-                    <span>Language: English, German</span>
+                    <span>言語: 日本語, 英語</span>
                   </li>
                   <li className="flex items-center text-gray-700">
                     <FaCheck />
-                    <span>Education Level: Master Degree</span>
+                    <span>学歴: 修士号</span>
                   </li>
                 </ul>
                 <div className="mt-8">
                   <p className="text-gray-700">
-                    205 North Michigan Avenue, Suite 810 Chicago, 60601, USA
+                    〒100-0001 東京都千代田区千代田1-1
                   </p>
-                  <p className="text-gray-700">Phone: (123) 456-7890</p>
-                  <p className="text-gray-700">Email: contact@Evara.com</p>
+                  <p className="text-gray-700">電話: (123) 456-7890</p>
+                  <p className="text-gray-700">メール: contact@Evara.com</p>
                 </div>
                 <button className="bg-green-500 text-white w-full px-6 py-3 rounded-lg mt-6 flex items-center justify-center">
                   <FaEnvelope />
-                  Send Message
+                  メッセージを送る
                 </button>
               </div>
             </aside>
           </div>
         </main>
 
-        <footer className="bg-black text-white py-8">
-          <div className="container mx-auto px-4 text-center">
-            <p className="mb-4">Subscribe to our newsletter</p>
-            <input
-              type="email"
-              placeholder="Enter your email here"
-              className="w-full max-w-xs px-4 py-2 border rounded mb-4"
-            />
-            <button className="bg-green-500 text-white px-4 py-2 rounded">
-              Subscribe
-            </button>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </IconContext.Provider>
   );
