@@ -25,6 +25,18 @@ const Header: React.FC = () => {
           >
             エンジニア一覧
           </Link>
+          <Link
+            to={"/clienttool"}
+            className="text-gray-700 hover:text-gray-900"
+          >
+            発注者利用ツール
+          </Link>
+          <Link
+            to={"/aiassistancespecification"}
+            className="text-gray-700 hover:text-gray-900"
+          >
+            発注者利用ツール2
+          </Link>
           <a
             href="https://fullstack-app-huzb.onrender.com/"
             className="text-gray-700 hover:text-gray-900"

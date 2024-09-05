@@ -9,6 +9,8 @@ import EngineerList from "./pages/EngineerList";
 import JobDetail from "./pages/JobDetail";
 import EngineerDetail from "./pages/EngineerDetail";
 import CompanyDetail from "./pages/CompanyDetail";
+import ClientTool from "./pages/ClientTool";
+import AIAsisstanceSpecification from "./pages/AIAssistanceSpecification";
 
 const App: React.FC = () => {
   return (
@@ -22,6 +24,11 @@ const App: React.FC = () => {
         <Route path="/jobdetail" element={<JobDetail />} />
         <Route path="/engineerdetail" element={<EngineerDetail />} />
         <Route path="/companydetail" element={<CompanyDetail />} />
+        <Route path="/clienttool" element={<ClientTool />} />
+        <Route
+          path="/aiassistancespecification"
+          element={<AIAsisstanceSpecification />}
+        />
       </Routes>
     </Router>
   );
