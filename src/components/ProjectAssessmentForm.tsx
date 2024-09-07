@@ -1,25 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-async function startAnalysis(answers: string[]): Promise<string> {
-  const response = await fetch("/analyze", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ answers }),
-  });
-  const data = await response.json();
-  return data.task_id;
-}
-
-async function checkAnalysisResult(
-  taskId: string
-): Promise<{ status: string; result?: string }> {
-  const response = await fetch(`/analysis_result/${taskId}`);
-  return await response.json();
-}
-
 const ProjectAssessmentForm = () => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState(["", "", "", "", ""]);
@@ -91,6 +72,18 @@ const ProjectAssessmentForm = () => {
       console.error("読み込み中にエラーが発生しました:", error);
       alert("読み込み中にエラーが発生しました。");
     }
+  };
+
+  const startAnalysis = async (answers: string[]): Promise<string> => {
+    const response = await axios.post(`${apiBaseUrl}/analyze`, { answers });
+    return response.data.task_id;
+  };
+
+  const checkAnalysisResult = async (
+    taskId: string
+  ): Promise<{ status: string; result?: string }> => {
+    const response = await axios.get(`${apiBaseUrl}/analysis_result/${taskId}`);
+    return response.data;
   };
 
   const analyzeAnswers = async () => {
