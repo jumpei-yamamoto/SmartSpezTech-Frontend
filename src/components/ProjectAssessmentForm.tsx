@@ -16,6 +16,11 @@ const ProjectAssessmentForm = () => {
     "このプロダクトがどのように実際のマーケットで事業として成立すると考えていますか？",
   ];
 
+  const apiBaseUrl =
+    process.env.NODE_ENV === "production"
+      ? "https://dov1dxiwhcjvd.cloudfront.net"
+      : "http://localhost:8000";
+
   useEffect(() => {
     // コンポーネントマウント時に既存のフォームIDを確認
     const existingFormId = localStorage.getItem("formId");
@@ -45,7 +50,7 @@ const ProjectAssessmentForm = () => {
 
   const saveAnswers = async () => {
     try {
-      const response = await axios.post("http://localhost:80/save", {
+      const response = await axios.post(`${apiBaseUrl}/save`, {
         id: formId,
         answers: answers,
       });
@@ -60,7 +65,7 @@ const ProjectAssessmentForm = () => {
 
   const loadAnswers = async (id: string) => {
     try {
-      const response = await axios.get(`http://localhost:80/load/${id}`);
+      const response = await axios.get(`${apiBaseUrl}/load/${id}`);
       setAnswers(response.data.answers);
       alert("回答が読み込まれました。");
     } catch (error) {
@@ -72,13 +77,18 @@ const ProjectAssessmentForm = () => {
   const analyzeAnswers = async () => {
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:80/analyze", {
+      const response = await axios.post(`${apiBaseUrl}/analyze`, {
         answers: answers,
       });
       setAnalysis(response.data.analysis);
     } catch (error) {
-      console.error("分析中にエラーが発生しました:", error);
-      alert("分析中にエラーが発生しました。");
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.message);
+        console.error("Response data:", error.response?.data);
+        console.error("Response status:", error.response?.status);
+      } else {
+        console.error("Unexpected error:", error);
+      }
     } finally {
       setLoading(false);
     }
