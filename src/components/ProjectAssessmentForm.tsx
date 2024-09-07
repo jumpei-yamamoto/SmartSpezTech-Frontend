@@ -18,7 +18,7 @@ const ProjectAssessmentForm = () => {
 
   const apiBaseUrl =
     process.env.NODE_ENV === "production"
-      ? "https://dov1dxiwhcjvd.cloudfront.net"
+      ? "http://smartspeztech.eba-kam3e43r.ap-northeast-3.elasticbeanstalk.com/"
       : "http://localhost:8000";
 
   useEffect(() => {
