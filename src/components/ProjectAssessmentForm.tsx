@@ -1,6 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+async function startAnalysis(answers: string[]): Promise<string> {
+  const response = await fetch("/analyze", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ answers }),
+  });
+  const data = await response.json();
+  return data.task_id;
+}
+
+async function checkAnalysisResult(
+  taskId: string
+): Promise<{ status: string; result?: string }> {
+  const response = await fetch(`/analysis_result/${taskId}`);
+  return await response.json();
+}
+
 const ProjectAssessmentForm = () => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState(["", "", "", "", ""]);
@@ -77,18 +96,22 @@ const ProjectAssessmentForm = () => {
   const analyzeAnswers = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${apiBaseUrl}/analyze`, {
-        answers: answers,
-      });
-      setAnalysis(response.data.analysis);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.message);
-        console.error("Response data:", error.response?.data);
-        console.error("Response status:", error.response?.status);
-      } else {
-        console.error("Unexpected error:", error);
+      const taskId = await startAnalysis(answers);
+      console.log("分析開始:", taskId);
+
+      while (true) {
+        const result = await checkAnalysisResult(taskId);
+        if (result.status === "complete") {
+          console.log("分析完了:", result.result);
+          setAnalysis(result.result || null);
+          break;
+        } else {
+          console.log("処理中...");
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+        }
       }
+    } catch (error) {
+      console.error("分析中にエラーが発生しました:", error);
     } finally {
       setLoading(false);
     }
