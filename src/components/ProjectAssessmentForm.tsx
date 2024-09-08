@@ -67,8 +67,13 @@ const ProjectAssessmentForm = () => {
       localStorage.setItem("formId", response.data.id);
       alert("回答が保存されました。");
     } catch (error) {
-      console.error("保存中にエラーが発生しました:", error);
-      alert("保存中にエラーが発生しました。");
+      if (axios.isAxiosError(error) && error.response?.status === 0) {
+        console.error("CORS エラーが発生しました:", error);
+        alert("CORS エラーが発生しました。サーバーの設定を確認してください。");
+      } else {
+        console.error("保存中にエラーが発生しました:", error);
+        alert("保存中にエラーが発生しました。");
+      }
     }
   };
 
@@ -76,15 +81,18 @@ const ProjectAssessmentForm = () => {
     try {
       const response = await axios.get(`${apiBaseUrl}/load/${id}`, {
         withCredentials: false,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        // Content-Type ヘッダーは GET リクエストでは不要なので削除
       });
       setAnswers(response.data.answers);
       alert("回答が読み込まれました。");
     } catch (error) {
-      console.error("読み込み中にエラーが発生しました:", error);
-      alert("読み込み中にエラーが発生しました。");
+      if (axios.isAxiosError(error) && error.response?.status === 0) {
+        console.error("CORS エラーが発生しました:", error);
+        alert("CORS エラーが発生しました。サーバーの設定を確認してください。");
+      } else {
+        console.error("読み込み中にエラーが発生しました:", error);
+        alert("読み込み中にエラーが発生しました。");
+      }
     }
   };
 
@@ -103,8 +111,13 @@ const ProjectAssessmentForm = () => {
       );
       setAnalysis(response.data.analysis);
     } catch (error) {
-      console.error("分析中にエラーが発生しました:", error);
-      alert("分析中にエラーが発生しました。");
+      if (axios.isAxiosError(error) && error.response?.status === 0) {
+        console.error("CORS エラーが発生しました:", error);
+        alert("CORS エラーが発生しました。サーバーの設定を確認してください。");
+      } else {
+        console.error("分析中にエラーが発生しました:", error);
+        alert("分析中にエラーが発生しました。");
+      }
     } finally {
       setLoading(false);
     }
