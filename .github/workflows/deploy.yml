@@ -26,7 +26,7 @@ jobs:
         with:
           name: react-build
           path: build/
-      - name: Trigger backend deployment # Corrected indentation
+      - name: Trigger backend deployment
         run: |
           curl -X POST \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
