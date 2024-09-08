@@ -33,3 +33,12 @@ jobs:
       - name: Upload Build to S3
         run: |
           aws s3 sync build/ s3://smartspeztech/react-build
+
+      # バックエンドのデプロイをトリガー
+      - name: Trigger backend deployment
+        run: |
+          curl -X POST \
+          -H "Authorization: token ${{ secrets.PAT }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/jumpei-yamamoto/SmartSpezTech/dispatches \
+          -d '{"event_type":"deploy_backend"}'
