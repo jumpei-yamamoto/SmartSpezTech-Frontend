@@ -57,7 +57,10 @@ const ProjectAssessmentForm = () => {
           answers: answers,
         },
         {
-          withCredentials: false,
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
       setFormId(response.data.id);
@@ -72,7 +75,10 @@ const ProjectAssessmentForm = () => {
   const loadAnswers = async (id: string) => {
     try {
       const response = await axios.get(`${apiBaseUrl}/load/${id}`, {
-        withCredentials: false,
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
       setAnswers(response.data.answers);
       alert("回答が読み込まれました。");
@@ -87,7 +93,10 @@ const ProjectAssessmentForm = () => {
       `${apiBaseUrl}/analyze`,
       { answers },
       {
-        withCredentials: false,
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     );
     return response.data.task_id;
@@ -99,7 +108,10 @@ const ProjectAssessmentForm = () => {
     const response = await axios.get(
       `${apiBaseUrl}/analysis_result/${taskId}`,
       {
-        withCredentials: false,
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     );
     return response.data;
