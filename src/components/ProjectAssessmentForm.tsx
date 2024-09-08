@@ -50,10 +50,16 @@ const ProjectAssessmentForm = () => {
 
   const saveAnswers = async () => {
     try {
-      const response = await axios.post(`${apiBaseUrl}/save`, {
-        id: formId,
-        answers: answers,
-      });
+      const response = await axios.post(
+        `${apiBaseUrl}/save`,
+        {
+          id: formId,
+          answers: answers,
+        },
+        {
+          withCredentials: false,
+        }
+      );
       setFormId(response.data.id);
       localStorage.setItem("formId", response.data.id);
       alert("回答が保存されました。");
@@ -65,7 +71,9 @@ const ProjectAssessmentForm = () => {
 
   const loadAnswers = async (id: string) => {
     try {
-      const response = await axios.get(`${apiBaseUrl}/load/${id}`);
+      const response = await axios.get(`${apiBaseUrl}/load/${id}`, {
+        withCredentials: false,
+      });
       setAnswers(response.data.answers);
       alert("回答が読み込まれました。");
     } catch (error) {
@@ -75,14 +83,25 @@ const ProjectAssessmentForm = () => {
   };
 
   const startAnalysis = async (answers: string[]): Promise<string> => {
-    const response = await axios.post(`${apiBaseUrl}/analyze`, { answers });
+    const response = await axios.post(
+      `${apiBaseUrl}/analyze`,
+      { answers },
+      {
+        withCredentials: false,
+      }
+    );
     return response.data.task_id;
   };
 
   const checkAnalysisResult = async (
     taskId: string
   ): Promise<{ status: string; result?: string }> => {
-    const response = await axios.get(`${apiBaseUrl}/analysis_result/${taskId}`);
+    const response = await axios.get(
+      `${apiBaseUrl}/analysis_result/${taskId}`,
+      {
+        withCredentials: false,
+      }
+    );
     return response.data;
   };
 
