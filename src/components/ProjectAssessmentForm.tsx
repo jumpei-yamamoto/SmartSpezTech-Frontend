@@ -19,7 +19,7 @@ const ProjectAssessmentForm = () => {
   const apiBaseUrl =
     process.env.NODE_ENV === "production"
       ? "https://smartspeztech.eba-kam3e43r.ap-northeast-3.elasticbeanstalk.com"
-      : "http://localhost:8000";
+      : "http://localhost:80";
 
   useEffect(() => {
     // コンポーネントマウント時に既存のフォームIDを確認
@@ -88,54 +88,23 @@ const ProjectAssessmentForm = () => {
     }
   };
 
-  const startAnalysis = async (answers: string[]): Promise<string> => {
-    const response = await axios.post(
-      `${apiBaseUrl}/analyze`,
-      { answers },
-      {
-        withCredentials: false,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data.task_id;
-  };
-
-  const checkAnalysisResult = async (
-    taskId: string
-  ): Promise<{ status: string; result?: string }> => {
-    const response = await axios.get(
-      `${apiBaseUrl}/analysis_result/${taskId}`,
-      {
-        withCredentials: false,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  };
-
   const analyzeAnswers = async () => {
     setLoading(true);
     try {
-      const taskId = await startAnalysis(answers);
-      console.log("分析開始:", taskId);
-
-      while (true) {
-        const result = await checkAnalysisResult(taskId);
-        if (result.status === "complete") {
-          console.log("分析完了:", result.result);
-          setAnalysis(result.result || null);
-          break;
-        } else {
-          console.log("処理中...");
-          await new Promise((resolve) => setTimeout(resolve, 5000));
+      const response = await axios.post(
+        `${apiBaseUrl}/analyze`,
+        { answers },
+        {
+          withCredentials: false,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      }
+      );
+      setAnalysis(response.data.analysis);
     } catch (error) {
       console.error("分析中にエラーが発生しました:", error);
+      alert("分析中にエラーが発生しました。");
     } finally {
       setLoading(false);
     }
