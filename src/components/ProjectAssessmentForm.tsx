@@ -57,7 +57,7 @@ const ProjectAssessmentForm = () => {
           answers: answers,
         },
         {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             "Content-Type": "application/json",
           },
@@ -75,7 +75,7 @@ const ProjectAssessmentForm = () => {
   const loadAnswers = async (id: string) => {
     try {
       const response = await axios.get(`${apiBaseUrl}/load/${id}`, {
-        withCredentials: true,
+        withCredentials: false,
         headers: {
           "Content-Type": "application/json",
         },
@@ -93,7 +93,7 @@ const ProjectAssessmentForm = () => {
       `${apiBaseUrl}/analyze`,
       { answers },
       {
-        withCredentials: true,
+        withCredentials: false,
         headers: {
           "Content-Type": "application/json",
         },
@@ -108,7 +108,7 @@ const ProjectAssessmentForm = () => {
     const response = await axios.get(
       `${apiBaseUrl}/analysis_result/${taskId}`,
       {
-        withCredentials: true,
+        withCredentials: false,
         headers: {
           "Content-Type": "application/json",
         },
