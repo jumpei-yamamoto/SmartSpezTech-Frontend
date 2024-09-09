@@ -18,6 +18,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # .elasticbeanstalkフォルダを削除
+      - name: Remove Elastic Beanstalk config
+        run: |
+          rm -rf .elasticbeanstalk/
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
