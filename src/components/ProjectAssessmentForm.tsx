@@ -16,10 +16,7 @@ const ProjectAssessmentForm = () => {
     "このプロダクトがどのように実際のマーケットで事業として成立すると考えていますか？",
   ];
 
-  const apiBaseUrl =
-    process.env.NODE_ENV === "production"
-      ? "https://smartspeztech.eba-kam3e43r.ap-northeast-3.elasticbeanstalk.com"
-      : "http://localhost:80";
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:80";
 
   useEffect(() => {
     // コンポーネントマウント時に既存のフォームIDを確認
