@@ -1,4 +1,4 @@
-name: Build React App and Upload Artifacts
+name: Build Docker Image and Deploy to Elastic Beanstalk
 
 on:
   push:
@@ -6,20 +6,23 @@ on:
       - main
 
 jobs:
-  build-and-upload-artifacts:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: npm install
-        env:
-          CI: false
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build React App
-        run: npm run build
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image to ECR
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       # AWS認証情報の設定
       - name: Configure AWS credentials
@@ -29,16 +32,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-3
 
-      # ビルド成果物をS3にアップロード
-      - name: Upload Build to S3
+      # Elastic Beanstalk CLIのインストール
+      - name: Install Elastic Beanstalk CLI
         run: |
-          aws s3 sync build/ s3://smartspeztech/react-build
+          pip install awsebcli
 
-      # バックエンドのデプロイをトリガー
-      - name: Trigger backend deployment
+      # Elastic Beanstalkへのデプロイ
+      - name: Deploy to Elastic Beanstalk
         run: |
-          curl -X POST \
-          -H "Authorization: token ${{ secrets.PAT }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/jumpei-yamamoto/SmartSpezTech/dispatches \
-          -d '{"event_type":"deploy_backend"}'
+          eb init -p docker smartspeztech --region ap-northeast-3
+          eb use smartspeztech
+          eb deploy
