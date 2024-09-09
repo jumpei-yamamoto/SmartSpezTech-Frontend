@@ -18,10 +18,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # .elasticbeanstalkフォルダを削除
-      - name: Remove Elastic Beanstalk config
+      # 最初に前回のファイルやディレクトリを削除
+      - name: Remove old files and directories
         run: |
           rm -rf .elasticbeanstalk/
+          rm -rf node_modules
+          rm -rf build
+          rm -rf .git
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -34,7 +37,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-3
 
-      # Amazon ECRにログイン (リージョンを指定)
+      # Amazon ECRにログイン
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
@@ -54,4 +57,4 @@ jobs:
         run: |
           eb init -p docker smartspeztech --region ap-northeast-3
           eb use smartspeztech
-          eb deploy
+          eb deploy --verbose --debug
