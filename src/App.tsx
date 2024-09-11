@@ -11,6 +11,7 @@ import EngineerDetail from "./pages/EngineerDetail";
 import CompanyDetail from "./pages/CompanyDetail";
 import ClientTool from "./pages/ClientTool";
 import AIAsisstanceSpecification from "./pages/AIAssistanceSpecification";
+import LandingPage from "./pages/LandingPage";
 
 const App: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const App: React.FC = () => {
           path="/aiassistancespecification"
           element={<AIAsisstanceSpecification />}
         />
+        <Route path="/landingpage" element={<LandingPage />} />
       </Routes>
     </Router>
   );
