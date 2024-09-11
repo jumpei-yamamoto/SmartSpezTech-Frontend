@@ -13,7 +13,7 @@ const SystemOrderSimulation: React.FC = () => {
   const [answers, setAnswers] = useState<
     Record<number, string | string[] | File[]>
   >({});
-  const [urls, setUrls] = useState<string[]>([""]); // 複数のURLを管理するための状態
+  const [urls, setUrls] = useState<string[]>([""]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const questions = [
@@ -116,7 +116,7 @@ const SystemOrderSimulation: React.FC = () => {
     },
     {
       id: 9,
-      text: "`参考WebサイトのURLを貼り付けてください（任意）",
+      text: "参考WebサイトのURLを貼り付けてください（任意）",
       type: "url",
     },
     {
@@ -173,7 +173,22 @@ const SystemOrderSimulation: React.FC = () => {
   const handleSubmit = () => {
     console.log("Answers:", answers);
     console.log("URLs:", urls);
-    // ここで回答とURLを送信する処理を実装します
+
+    // シミュレーション結果を別タブで表示
+    const estimateResult = "見積もり結果: 約500万円〜700万円";
+    const requirementsResult =
+      "主な要件: ユーザー認証、データ管理、レポート生成";
+    const designResult =
+      "推奨デザイン: モダンでシンプルなUI、レスポンシブデザイン";
+
+    // 別タブを開いて結果を表示
+    const newTab = window.open("/simulation-result", "_blank");
+
+    // 新しいタブにデータを送るために、localStorageを使用
+    localStorage.setItem(
+      "simulationResults",
+      JSON.stringify({ estimateResult, requirementsResult, designResult })
+    );
   };
 
   const addUrlField = () => {
@@ -194,7 +209,7 @@ const SystemOrderSimulation: React.FC = () => {
   const currentQuestionData = questions[currentQuestion];
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 min-h-screen p-4">
       <h1 className="text-2xl font-bold text-blue-600 mb-4">
         システム発注シミュレーション
       </h1>
@@ -216,6 +231,7 @@ const SystemOrderSimulation: React.FC = () => {
         </h2>
         <p className="text-lg mb-4">{currentQuestionData.text}</p>
 
+        {/* テキスト入力タイプの質問 */}
         {currentQuestionData.type === "text" && (
           <textarea
             className="w-full p-2 border border-gray-300 rounded-md"
@@ -228,6 +244,7 @@ const SystemOrderSimulation: React.FC = () => {
           />
         )}
 
+        {/* ファイルアップロードタイプの質問 */}
         {currentQuestionData.type === "file" && (
           <div className="space-y-4">
             <input
@@ -260,6 +277,7 @@ const SystemOrderSimulation: React.FC = () => {
           </div>
         )}
 
+        {/* ラジオボタンやチェックボックスの質問 */}
         {(currentQuestionData.type === "radio" ||
           currentQuestionData.type === "checkbox") &&
           currentQuestionData.options && (

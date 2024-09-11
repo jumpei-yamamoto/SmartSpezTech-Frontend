@@ -12,6 +12,8 @@ import CompanyDetail from "./pages/CompanyDetail";
 import ClientTool from "./pages/ClientTool";
 import AIAsisstanceSpecification from "./pages/AIAssistanceSpecification";
 import LandingPage from "./pages/LandingPage";
+import SimulationResult from "./pages/SimulationResult";
+import SystemOrderSimulation from "./components/SystemOrderSimuration";
 
 const App: React.FC = () => {
   return (
@@ -31,6 +33,8 @@ const App: React.FC = () => {
           element={<AIAsisstanceSpecification />}
         />
         <Route path="/landingpage" element={<LandingPage />} />
+        <Route path="/simulation" element={<SystemOrderSimulation />} />
+        <Route path="/simulation-result" element={<SimulationResult />} />
       </Routes>
     </Router>
   );
