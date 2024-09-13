@@ -1,4 +1,6 @@
+// SystemOrderSimulation.tsx
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom"; // 追加
 import {
   ChevronLeft,
   ChevronRight,
@@ -7,14 +9,21 @@ import {
   PlusCircle,
   X,
 } from "lucide-react";
+import axios from "axios";
 
 const SystemOrderSimulation: React.FC = () => {
+  const navigate = useNavigate(); // 追加
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<
     Record<number, string | string[] | File[]>
   >({});
   const [urls, setUrls] = useState<string[]>([""]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [analysis, setAnalysis] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const apiBaseUrl =
+    process.env.REACT_APP_API_BASE_URL || "http://localhost:80"; // デフォルトポートを変更
 
   const questions = [
     {
@@ -92,18 +101,6 @@ const SystemOrderSimulation: React.FC = () => {
     },
     {
       id: 7,
-      text: "開発期間はどのくらいを予定していますか？",
-      options: [
-        "1ヶ月以内",
-        "1-3ヶ月",
-        "3-6ヶ月",
-        "6ヶ月以上",
-        "柔軟に対応可能",
-      ],
-      type: "radio",
-    },
-    {
-      id: 8,
       text: "システム導入後のサポートは必要ですか？",
       options: [
         "必要ない",
@@ -115,17 +112,17 @@ const SystemOrderSimulation: React.FC = () => {
       type: "radio",
     },
     {
+      id: 8,
+      text: "開発したいシステムを言語化するとどのようなシステムですか？",
+      type: "text",
+    },
+    {
       id: 9,
       text: "参考WebサイトのURLを貼り付けてください（任意）",
       type: "url",
     },
     {
       id: 10,
-      text: "開発したいシステムを言語化するとどのようなシステムですか？",
-      type: "text",
-    },
-    {
-      id: 11,
       text: "補足資料をアップロードしてください（任意）",
       type: "file",
     },
@@ -145,7 +142,9 @@ const SystemOrderSimulation: React.FC = () => {
 
   const handleAnswer = (questionId: number, answer: string | File[]) => {
     setAnswers((prevAnswers) => {
-      const currentQuestion = questions[questionId - 1];
+      const currentQuestion = questions.find((q) => q.id === questionId);
+      if (!currentQuestion) return prevAnswers;
+
       if (currentQuestion.type === "radio") {
         return { ...prevAnswers, [questionId]: answer as string };
       } else if (currentQuestion.type === "checkbox") {
@@ -170,25 +169,55 @@ const SystemOrderSimulation: React.FC = () => {
     handleAnswer(11, validFiles);
   };
 
+  const estimateAnswers = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${apiBaseUrl}/estimate`,
+        { answers, urls },
+        {
+          withCredentials: false,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const adjustedAnalysis = adjustAnalysisAndAddAdvice(
+        response.data.analysis,
+        answers
+      );
+      setAnalysis(adjustedAnalysis);
+
+      const simulationData = {
+        requirements_specification: response.data.requirements_specification,
+        requirements_definition: response.data.requirements_definition,
+        screens: response.data.screens || [],
+        estimate_develop: response.data.estimate_develop,
+        answers: answers,
+      };
+
+      // データをlocalStorageに保存
+      localStorage.setItem("simulationResults", JSON.stringify(simulationData));
+
+      // 同じタブで結果画面に遷移
+      navigate("/simulation-result");
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 0) {
+        console.error("CORS エラーが発生しました:", error);
+        alert("CORS エラーが発生しました。サーバーの設定を確認してください。");
+      } else {
+        console.error("分析中にエラーが発生しました:", error);
+        alert("分析中にエラーが発生しました。");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = () => {
-    console.log("Answers:", answers);
-    console.log("URLs:", urls);
-
-    // シミュレーション結果を別タブで表示
-    const estimateResult = "見積もり結果: 約500万円〜700万円";
-    const requirementsResult =
-      "主な要件: ユーザー認証、データ管理、レポート生成";
-    const designResult =
-      "推奨デザイン: モダンでシンプルなUI、レスポンシブデザイン";
-
-    // 別タブを開いて結果を表示
-    const newTab = window.open("/simulation-result", "_blank");
-
-    // 新しいタブにデータを送るために、localStorageを使用
-    localStorage.setItem(
-      "simulationResults",
-      JSON.stringify({ estimateResult, requirementsResult, designResult })
-    );
+    const validUrls = urls.filter((url) => url.trim() !== "");
+    setUrls(validUrls);
+    estimateAnswers();
   };
 
   const addUrlField = () => {
@@ -207,6 +236,182 @@ const SystemOrderSimulation: React.FC = () => {
   };
 
   const currentQuestionData = questions[currentQuestion];
+
+  const isCurrentQuestionAnswered = () => {
+    if (currentQuestion >= 8) return true; // 質問9と10は任意なので常にtrue
+    const answer = answers[currentQuestionData.id];
+    if (!answer) return false;
+    if (Array.isArray(answer)) return answer.length > 0;
+    if (typeof answer === "string") return answer.trim() !== "";
+    return true;
+  };
+
+  const adjustAnalysisAndAddAdvice = (
+    originalAnalysis: string,
+    answers: Record<number, string | string[] | File[]>
+  ): string => {
+    let adjustedAnalysis = originalAnalysis;
+
+    const purpose = answers[1] as string;
+    const mainFeatures = answers[2] as string[];
+    const devices = answers[3] as string[];
+    const dataTypes = answers[4] as string[];
+    const integration = answers[5] as string;
+    const security = answers[6] as string;
+    const developmentPeriod = answers[7] as string;
+    const support = answers[8] as string;
+    const systemDescription = answers[9] as string;
+
+    adjustedAnalysis += `
+
+ご入力いただいた内容に基づき、以下のアドバイスと具体的な提案をさせていただきます：
+
+1. システムの目的：${purpose}
+   提案：${
+     purpose === "社内業務の効率化"
+       ? "業務プロセスの可視化と自動化ツールの導入"
+       : purpose === "顧客サービスの向上"
+       ? "カスタマーエクスペリエンス（CX）分析ツールの統合"
+       : purpose === "売上・利益の増加"
+       ? "AIを活用した需要予測と価格最適化機能の実装"
+       : purpose === "コスト削減"
+       ? "クラウドベースのリソース最適化ソリューションの採用"
+       : "目的に特化したカスタムソリューションの設計"
+   }はいかがでしょうか。
+
+2. 主要機能：${mainFeatures.join(", ")}
+   提案：${
+     mainFeatures.includes("データ入力・管理")
+       ? "OCRとAI技術を活用した自動データ入力システム"
+       : ""
+   }
+        ${
+          mainFeatures.includes("レポート作成")
+            ? "ダッシュボード機能付きの動的レポート生成ツール"
+            : ""
+        }
+        ${
+          mainFeatures.includes("スケジュール管理")
+            ? "AIアシスタント搭載のスマートスケジューリングシステム"
+            : ""
+        }
+        ${
+          mainFeatures.includes("顧客管理")
+            ? "予測分析機能を備えたCRMシステム"
+            : ""
+        }
+        ${
+          mainFeatures.includes("在庫管理")
+            ? "IoTセンサーと連携したリアルタイム在庫管理システム"
+            : ""
+        }
+        ${
+          mainFeatures.includes("決済機能")
+            ? "ブロックチェーン技術を活用した安全な決済システム"
+            : ""
+        }
+   などの導入を検討してみてはいかがでしょうか。
+
+3. 利用デバイス：${devices.join(", ")}
+   提案：${
+     devices.includes("スマートフォン")
+       ? "レスポンシブデザインとPWA（Progressive Web App）技術の採用"
+       : devices.includes("タブレット")
+       ? "タッチ操作に最適化されたUIデザインの実装"
+       : devices.includes("専用端末")
+       ? "デバイス固有の機能を最大限に活用したカスタムアプリケーションの開発"
+       : "デスクトップ向けの高機能なWebアプリケーションの構築"
+   }を検討してみてはいかがでしょうか。
+
+4. データタイプ：${dataTypes.join(", ")}
+   提案：${
+     dataTypes.includes("顧客情報")
+       ? "GDPRに準拠した顧客データ管理システム"
+       : ""
+   }
+        ${
+          dataTypes.includes("売上データ")
+            ? "リアルタイム売上分析ダッシュボード"
+            : ""
+        }
+        ${
+          dataTypes.includes("在庫情報")
+            ? "AIを活用した需要予測と自動発注システム"
+            : ""
+        }
+        ${
+          dataTypes.includes("スケジュール")
+            ? "カレンダーAPIと連携したクロスプラットフォームスケジュール管理"
+            : ""
+        }
+        ${
+          dataTypes.includes("文書ファイル")
+            ? "全文検索機能付きのクラウドベース文書管理システム"
+            : ""
+        }
+   の導入を検討してみてはいかがでしょうか。
+
+5. 既存システムとの連携：${integration}
+   提案：${
+     integration === "必要ない"
+       ? "スタンドアロンシステムの構築"
+       : integration === "一部連携が必要"
+       ? "APIを活用したモジュラー設計"
+       : integration === "全面的に連携が必要"
+       ? "エンタープライズサービスバス（ESB）の導入"
+       : "将来の拡張性を考慮したマイクロサービスアーキテクチャの採用"
+   }を検討してみてはいかがでしょうか。
+
+6. セキュリティ要件：${security}
+   提案：${
+     security === "一般的なレベルで十分"
+       ? "標準的な暗号化とアクセス制御"
+       : security === "やや高度なセキュリティが必要"
+       ? "多要素認証と詳細なアクセスログの実装"
+       : security === "非常に高度なセキュリティが必須"
+       ? "ゼロトラストアーキテクチャの採用"
+       : "段階的にセキュリティレベルを向上できる柔軟な設計"
+   }を検討してみてはいかがでしょうか。
+
+7. 開発期間：${developmentPeriod}
+   提案：${
+     developmentPeriod === "1ヶ月以内"
+       ? "アジャイル開発手法とローコード/ノーコードプラットフォームの活用"
+       : developmentPeriod === "1-3ヶ月"
+       ? "スクラム手法を用いた迅速な開発サイクル"
+       : developmentPeriod === "3-6ヶ月"
+       ? "フェーズ分けされた段階的な開発アプローチ"
+       : developmentPeriod === "6ヶ月以上"
+       ? "ウォーターフォールとアジャイルのハイブリッドアプローチ"
+       : "柔軟なマイルストーン設定と定期的な進捗レビュー"
+   }を採用してみてはいかがでしょうか。
+
+8. システム導入後のサポート：${support}
+   提案：${
+     support === "必要ない"
+       ? "詳細なユーザーマニュアルとFAQの作成"
+       : support === "軽度のサポート（問い合わせ対応程度）"
+       ? "チャットボットを活用したセルフサービスサポート"
+       : support === "中程度のサポート（定期的なメンテナンス含む）"
+       ? "リモートモニタリングと定期的な保守計画の策定"
+       : support === "手厚いサポート（運用代行も含む）"
+       ? "24/7対応のデディケーテッドサポートチームの設置"
+       : "段階的にサポートレベルを調整できる柔軟なサポート体制"
+   }の構築を検討してみてはいかがでしょうか。
+
+システム概要：${systemDescription}
+上記の概要を踏まえ、${purpose}を実現するための${
+      mainFeatures[0]
+    }機能に重点を置いた開発を進めることをお勧めします。${
+      devices[0]
+    }向けのユーザーインターフェースを優先的に設計し、${
+      dataTypes[0]
+    }の効率的な管理を可能にするデータモデルを構築することで、システムの基盤を固めることができるでしょう。
+
+これらの提案を参考に、プロジェクトの詳細計画を立てていただければと思います。さらに具体的なアドバイスや質問がございましたら、お気軽にお問い合わせください。`;
+
+    return adjustedAnalysis;
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen p-4">
@@ -227,7 +432,7 @@ const SystemOrderSimulation: React.FC = () => {
       {/* Main Content */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold mb-4">
-          質問 {currentQuestionData.id} / {questions.length}
+          質問 {currentQuestion + 1} / {questions.length}
         </h2>
         <p className="text-lg mb-4">{currentQuestionData.text}</p>
 
@@ -354,16 +559,19 @@ const SystemOrderSimulation: React.FC = () => {
         {currentQuestion === questions.length - 1 ? (
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            disabled={loading}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            見積もり
+            {loading ? "分析中..." : "見積もり"}
           </button>
         ) : (
           <button
             onClick={handleNext}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            disabled={currentQuestion < 9 && !isCurrentQuestionAnswered()}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            次へ <ChevronRight className="inline-block ml-2 h-4 w-4" />
+            {currentQuestion >= 9 ? "スキップ" : "次へ"}{" "}
+            <ChevronRight className="inline-block ml-2 h-4 w-4" />
           </button>
         )}
       </div>

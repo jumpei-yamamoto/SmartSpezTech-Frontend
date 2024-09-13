@@ -16,7 +16,8 @@ const ProjectAssessmentForm = () => {
     "このプロダクトがどのように実際のマーケットで事業として成立すると考えていますか？",
   ];
 
-  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:80";
+  const apiBaseUrl =
+    process.env.REACT_APP_API_BASE_URL || "http://localhost:80";
 
   useEffect(() => {
     // コンポーネントマウント時に既存のフォームIDを確認
