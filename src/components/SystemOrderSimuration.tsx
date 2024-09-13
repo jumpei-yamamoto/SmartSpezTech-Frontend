@@ -172,9 +172,14 @@ const SystemOrderSimulation: React.FC = () => {
   const estimateAnswers = async () => {
     setLoading(true);
     try {
+      // 質問9のURLをanswersに統合
+      const updatedAnswers = {
+        ...answers,
+        9: urls.filter((url) => url.trim() !== ""),
+      };
       const response = await axios.post(
         `${apiBaseUrl}/estimate`,
-        { answers, urls },
+        { answers: updatedAnswers },
         {
           withCredentials: false,
           headers: {
@@ -182,24 +187,21 @@ const SystemOrderSimulation: React.FC = () => {
           },
         }
       );
-      const adjustedAnalysis = adjustAnalysisAndAddAdvice(
-        response.data.analysis,
-        answers
-      );
-      setAnalysis(adjustedAnalysis);
+      setAnalysis(response.data.analysis);
 
       const simulationData = {
         requirements_specification: response.data.requirements_specification,
         requirements_definition: response.data.requirements_definition,
         screens: response.data.screens || [],
         estimate_develop: response.data.estimate_develop,
-        answers: answers,
+        analysis: response.data.analysis,
+        answers: updatedAnswers,
       };
 
       // データをlocalStorageに保存
       localStorage.setItem("simulationResults", JSON.stringify(simulationData));
 
-      // 同じタブで結果画面に遷移
+      // 結果画面に遷移
       navigate("/simulation-result");
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 0) {
@@ -216,7 +218,8 @@ const SystemOrderSimulation: React.FC = () => {
 
   const handleSubmit = () => {
     const validUrls = urls.filter((url) => url.trim() !== "");
-    setUrls(validUrls);
+    const updatedAnswers = { ...answers, 9: validUrls };
+    setAnswers(updatedAnswers);
     estimateAnswers();
   };
 
