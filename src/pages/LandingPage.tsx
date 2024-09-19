@@ -10,7 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import Modal from "../components/Modal";
-import SystemOrderSimulation from "../components/SystemOrderSimuration";
+import SystemOrderSimulation from "../components/SystemOrderSimulation";
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
