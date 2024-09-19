@@ -22,7 +22,10 @@ const Header: React.FC = () => {
           >
             エンジニア一覧
           </Link>
-          <Link to="/clienttool" className="text-gray-700 hover:text-gray-900">
+          <Link
+            to="/system-preview"
+            className="text-gray-700 hover:text-gray-900"
+          >
             発注者利用ツール
           </Link>
           <Link

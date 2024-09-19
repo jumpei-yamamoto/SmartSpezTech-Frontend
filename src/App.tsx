@@ -13,7 +13,8 @@ import ClientTool from "./pages/ClientTool";
 import AIAsisstanceSpecification from "./pages/AIAssistanceSpecification";
 import LandingPage from "./pages/LandingPage";
 import SimulationResult from "./pages/SimulationResult";
-import SystemOrderSimulation from "./components/SystemOrderSimuration";
+import SystemOrderSimulation from "./components/SystemOrderSimulation";
+import SystemPreview from "./components/SystemPreview";
 
 const App: React.FC = () => {
   return (
@@ -35,6 +36,7 @@ const App: React.FC = () => {
         <Route path="/landingpage" element={<LandingPage />} />
         <Route path="/simulation" element={<SystemOrderSimulation />} />
         <Route path="/simulation-result" element={<SimulationResult />} />
+        <Route path="/system-preview" element={<SystemPreview />} />
       </Routes>
     </Router>
   );

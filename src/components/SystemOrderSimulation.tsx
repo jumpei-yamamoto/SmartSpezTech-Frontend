@@ -83,7 +83,7 @@ const SystemOrderSimulation: React.FC = () => {
       options: [
         "必要ない",
         "一部連携が必要",
-        "全面的に連携が必要",
+        "全的に連携が必要",
         "わからない",
       ],
       type: "radio",
@@ -178,7 +178,7 @@ const SystemOrderSimulation: React.FC = () => {
         9: urls.filter((url) => url.trim() !== ""),
       };
       const response = await axios.post(
-        `${apiBaseUrl}/estimate`,
+        `${apiBaseUrl}/preview`,
         { answers: updatedAnswers },
         {
           withCredentials: false,
@@ -187,22 +187,21 @@ const SystemOrderSimulation: React.FC = () => {
           },
         }
       );
-      setAnalysis(response.data.analysis);
 
-      const simulationData = {
-        requirements_specification: response.data.requirements_specification,
-        requirements_definition: response.data.requirements_definition,
-        screens: response.data.screens || [],
-        estimate_develop: response.data.estimate_develop,
-        analysis: response.data.analysis,
-        answers: updatedAnswers,
-      };
+      const simulationData = response.data;
+
+      console.log("response:", response);
+      console.log("response.data:", response.data);
 
       // データをlocalStorageに保存
       localStorage.setItem("simulationResults", JSON.stringify(simulationData));
 
+      console.log("simulationData元ページ:", simulationData);
+
       // 結果画面に遷移
-      navigate("/simulation-result");
+      navigate("/system-preview", {
+        state: { simulationData },
+      });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 0) {
         console.error("CORS エラーが発生しました:", error);
