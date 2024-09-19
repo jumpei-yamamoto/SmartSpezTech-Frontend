@@ -42,10 +42,17 @@ export default function SystemPreview() {
   const currentPageData = simulationData[currentPage];
 
   const renderPreview = (preview: string) => {
+    const containerClass =
+      device === "desktop" ? "w-full max-w-4xl" : "w-full max-w-sm";
+
+    const previewClass = device === "desktop" ? "text-sm" : "text-xs";
+
     return (
-      <div className="bg-white p-4 rounded-lg shadow-sm overflow-auto max-h-[600px]">
+      <div
+        className={`bg-white p-4 rounded-lg shadow-sm overflow-auto max-h-[600px] mx-auto ${containerClass}`}
+      >
         <pre
-          className="text-sm whitespace-pre-wrap"
+          className={`whitespace-pre-wrap ${previewClass}`}
           dangerouslySetInnerHTML={{ __html: preview }}
         />
       </div>
@@ -142,7 +149,7 @@ export default function SystemPreview() {
             </div>
           </div>
 
-          <div className="relative border rounded-lg bg-white flex items-center justify-center overflow-hidden">
+          <div className="relative border rounded-lg bg-white flex items-center justify-center overflow-hidden p-4">
             {renderPreview(currentPageData?.preview || "No preview available")}
           </div>
 
