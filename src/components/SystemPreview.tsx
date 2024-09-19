@@ -10,6 +10,7 @@ import {
 import { useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import ContactModal from "./ContactModal"; // ContactModalをインポート
 
 // propsとしてpageDataの配列を受け取る
 interface PageData {
@@ -33,6 +34,7 @@ export default function SystemPreview() {
 
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   useEffect(() => {
     console.log("simulationData:", simulationData);
@@ -61,31 +63,19 @@ export default function SystemPreview() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <header className="bg-white border-b p-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Webシステムプレビュー</h1>
-        <div className="flex items-center space-x-4">
-          <div className="relative w-64 h-2 bg-gray-300 rounded">
-            <div
-              className="h-2 bg-blue-500 rounded"
-              style={{ width: `${(currentPage / totalPages) * 100}%` }}
-            />
-          </div>
-          <span className="text-sm text-gray-500">
-            ステップ {currentPage + 1}/{totalPages}
-          </span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded">
-            保存
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded">
-            共有
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded">
-            編集
-          </button>
-        </div>
+      <header className="bg-white border-b p-4 flex items-center justify-center">
+        <h1 className="text-2xl font-bold mr-4">Webシステムプレビュー</h1>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          onClick={() => setIsContactModalOpen(true)}
+        >
+          お問い合わせ
+        </button>
       </header>
+
+      <h2 className="text-center text-lg font-semibold text-gray-700 mt-4 px-4">
+        AIによるシステムプレビューを表示しています。具体的な機能や詳細なお見積りをご希望の方は、ぜひお問い合わせボタンからご相談ください。
+      </h2>
 
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-4xl mx-auto">
@@ -168,6 +158,11 @@ export default function SystemPreview() {
           )}
         </div>
       </main>
+
+      <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+      />
     </div>
   );
 }
