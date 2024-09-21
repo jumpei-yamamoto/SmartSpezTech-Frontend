@@ -80,12 +80,7 @@ const SystemOrderSimulation: React.FC = () => {
     {
       id: 5,
       text: "既存のシステムとの連携は必要ですか？",
-      options: [
-        "必要ない",
-        "一部連携が必要",
-        "全的に連携が必要",
-        "わからない",
-      ],
+      options: ["必要ない", "一部連携が必要", "全的に連携が必要", "わからない"],
       type: "radio",
     },
     {

@@ -1,18 +1,72 @@
 import React, { useState } from "react";
 import { Mail, User, MessageSquare, Send } from "lucide-react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { PageData } from "./SystemPreview";
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
+  simulationData: PageData[];
 }
 
-export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
-  const handleSubmit = (event: React.FormEvent) => {
+export default function ContactModal({
+  isOpen,
+  onClose,
+  simulationData,
+}: ContactModalProps) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const apiBaseUrl =
+    process.env.REACT_APP_API_BASE_URL || "http://localhost:80";
+
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // ここに送信ロジックを実装
-    console.log("フォームが送信されました");
-    onClose();
+    setLoading(true);
+
+    const formData = {
+      name,
+      email,
+      message,
+      simulationData,
+    };
+
+    try {
+      const response = await axios.post(
+        `${apiBaseUrl}/submit_inquiry`,
+        formData,
+        {
+          withCredentials: false,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("お問い合わせが正常に送信されました");
+        onClose();
+        navigate('/thanks'); // ThanksPageへリダイレクト
+      } else {
+        console.error("お問い合わせの送信中にエラーが発生しました");
+        alert("お問い合わせの送信中にエラーが発生しました。");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 0) {
+        console.error("CORS エラーが発生しました:", error);
+        alert("CORS エラーが発生しました。サーバーの設定を確認してください。");
+      } else {
+        console.error("お問い合わせの送信中にエラーが発生しました", error);
+        alert("お問い合わせの送信中にエラーが発生しました。");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -47,6 +101,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   />
                   <input
                     id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="pl-10 w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-md focus:ring-blue-400 focus:border-blue-400 p-2"
                     required
                   />
@@ -64,6 +120,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   <input
                     id="email"
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-md focus:ring-blue-400 focus:border-blue-400 p-2"
                     required
                   />
@@ -80,6 +138,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   />
                   <textarea
                     id="message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     className="pl-10 w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-md focus:ring-blue-400 focus:border-blue-400 p-2"
                     rows={4}
                     required
@@ -89,10 +149,17 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             </div>
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-400 to-cyan-300 text-white py-2 px-4 rounded-md hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 flex items-center justify-center"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-400 to-cyan-300 text-white py-2 px-4 rounded-md hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Send className="mr-2" size={18} />
-              送信
+              {loading ? (
+                "送信中..."
+              ) : (
+                <>
+                  <Send className="mr-2" size={18} />
+                  送信
+                </>
+              )}
             </button>
           </form>
           <p className="text-sm text-gray-500 mt-4 italic">

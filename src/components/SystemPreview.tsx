@@ -12,17 +12,19 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ContactModal from "./ContactModal"; // ContactModalをインポート
 
-// propsとしてpageDataの配列を受け取る
-interface PageData {
+// PageData インターフェースをここで定義
+export interface PageData {
   title: string;
   catchphrase: string;
   description: string;
   preview: string;
+  answer: string;
 }
 
-interface ComponentProps {
-  pageData: PageData[]; // 既存
-}
+// ComponentProps は使用されていないので削除可能です
+// interface ComponentProps {
+//   pageData: PageData[];
+// }
 
 export default function SystemPreview() {
   // Renamed from Component to SystemPreview
@@ -162,6 +164,7 @@ export default function SystemPreview() {
       <ContactModal
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
+        simulationData={simulationData}
       />
     </div>
   );

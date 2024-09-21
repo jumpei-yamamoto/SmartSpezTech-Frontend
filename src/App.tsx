@@ -15,6 +15,7 @@ import LandingPage from "./pages/LandingPage";
 import SimulationResult from "./pages/SimulationResult";
 import SystemOrderSimulation from "./components/SystemOrderSimulation";
 import SystemPreview from "./components/SystemPreview";
+import ThanksPage from "./pages/ThanksPage";
 
 const App: React.FC = () => {
   return (
@@ -37,6 +38,7 @@ const App: React.FC = () => {
         <Route path="/simulation" element={<SystemOrderSimulation />} />
         <Route path="/simulation-result" element={<SimulationResult />} />
         <Route path="/system-preview" element={<SystemPreview />} />
+        <Route path="/thanks" element={<ThanksPage />} />
       </Routes>
     </Router>
   );

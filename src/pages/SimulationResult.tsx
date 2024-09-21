@@ -635,10 +635,10 @@ const SimulationResult: React.FC = () => {
         )}
 
         {/* 問い合わせモーダル */}
-        <ContactModal
+        {/* <ContactModal
           isOpen={showInquiryModal}
           onClose={() => setShowInquiryModal(false)}
-        />
+        /> */}
       </div>
     </div>
   );
