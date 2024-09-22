@@ -22,13 +22,16 @@ const Header: React.FC = () => {
           >
             エンジニア一覧
           </Link>
+          <Link to="/inquirylist" className="text-gray-700 hover:text-gray-900">
+            問い合わせ管理
+          </Link>
           <Link
             to="/system-preview"
             className="text-gray-700 hover:text-gray-900"
           >
             発注者利用ツール
           </Link>
-          <Link
+          {/* <Link
             to="/aiassistancespecification"
             className="text-gray-700 hover:text-gray-900"
           >
@@ -41,7 +44,7 @@ const Header: React.FC = () => {
             rel="noopener noreferrer"
           >
             AI補助ツール（サンプル:1分程起動に掛かります）
-          </a>
+          </a> */}
         </nav>
         <Link to="/" className="bg-purple-400 text-white px-4 py-2 rounded">
           ログイン

@@ -6,6 +6,8 @@ import Register from "./pages/Register";
 import JobList from "./pages/JobList";
 import CompanyList from "./pages/CompanyList";
 import EngineerList from "./pages/EngineerList";
+import InquiryList from "./pages/InquiryList";
+import InquiryDetail from "./pages/InquiryDetail";
 import JobDetail from "./pages/JobDetail";
 import EngineerDetail from "./pages/EngineerDetail";
 import CompanyDetail from "./pages/CompanyDetail";
@@ -29,6 +31,8 @@ const App: React.FC = () => {
         <Route path="/jobdetail" element={<JobDetail />} />
         <Route path="/engineerdetail" element={<EngineerDetail />} />
         <Route path="/companydetail" element={<CompanyDetail />} />
+        <Route path="/inquirylist" element={<InquiryList />} />
+        <Route path="/inquirydetail/:id" element={<InquiryDetail />} />
         <Route path="/clienttool" element={<ClientTool />} />
         <Route
           path="/aiassistancespecification"
