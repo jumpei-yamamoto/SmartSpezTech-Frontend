@@ -1,5 +1,5 @@
 // src/InquiryDetail.tsx
-import React, { useState, Fragment } from "react";
+import React, { useState, useEffect, Fragment, useRef } from "react";
 import {
   Send,
   ArrowRight,
@@ -16,6 +16,7 @@ import { Dialog, Transition, Tab } from "@headlessui/react";
 import classNames from "classnames";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import axios from "axios";
 
 interface Screen {
   id: number;
@@ -42,6 +43,15 @@ interface Relation {
   from: string;
   to: string;
   type: string;
+}
+
+// Inquiry インターフェースを追加
+interface Inquiry {
+  id: number;
+  name: string;
+  email: string;
+  inquiry: string;
+  status: number;
 }
 
 const InquiryDetail: React.FC = () => {
@@ -176,6 +186,18 @@ const InquiryDetail: React.FC = () => {
   const [selectedScreen, setSelectedScreen] = useState<Screen | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [acceptError, setAcceptError] = useState<string | null>(null);
+  const [isEditingHtml, setIsEditingHtml] = useState(false);
+  const [editingScreenId, setEditingScreenId] = useState<number | null>(null);
+  const [editingHtml, setEditingHtml] = useState("");
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const apiBaseUrl =
+    process.env.REACT_APP_API_BASE_URL || "http://localhost:80";
+
+  // 問い合わせ情報の state を追加
+  const [inquiry, setInquiry] = useState<Inquiry | null>(null);
 
   const handleAiQuery = () => {
     // 実際のAI統合ロジックに置き換えてください
@@ -191,7 +213,7 @@ const InquiryDetail: React.FC = () => {
       requirements: [
         "ユーザーログインが正常に機能すること",
         "ダッシュボードが最新のデータを表示すること",
-        "注文詳細が正確に��示されること",
+        "注文詳細が正確に表示されること",
         "売上レポートがPDF形式で出力できること",
         "タスクの追加、編集、完了が正しく機能すること",
         "商品在庫が注文処理時に適切に更新されること",
@@ -271,12 +293,169 @@ const InquiryDetail: React.FC = () => {
     setRelations(relations.filter((relation) => relation.id !== id));
   };
 
+  const handleAcceptOrder = async () => {
+    setIsAccepting(true);
+    setAcceptError(null);
+    const inquiryId = window.location.pathname.split("/").pop();
+
+    // すべてのデータを含むオブジェクトを作成
+    const orderData = {
+      inquiryId: inquiryId,
+      screens: screens,
+      events: eventsList,
+      entities: entities,
+      relations: relations,
+      aiResponse: aiResponse,
+    };
+
+    try {
+      const response = await axios.post(
+        `${apiBaseUrl}/api/accept-order`,
+        orderData,
+        {
+          withCredentials: false,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("受注が完了しました。");
+        // 問い合わせ管理ページに遷移
+        window.location.href = "/inquirylist";
+      } else {
+        throw new Error("受注に失敗しました。");
+      }
+    } catch (error) {
+      console.error("Error accepting order:", error);
+      setAcceptError("受注処理中にエラーが発生しました。");
+    } finally {
+      setIsAccepting(false);
+    }
+  };
+
+  const startEditingHtml = (screen: Screen) => {
+    setEditingScreenId(screen.id);
+    setEditingHtml(screen.html);
+    setIsEditingHtml(true);
+  };
+
+  const saveHtmlChanges = () => {
+    if (editingScreenId !== null) {
+      // screensを更新
+      const updatedScreens = screens.map((screen) =>
+        screen.id === editingScreenId
+          ? { ...screen, html: editingHtml }
+          : screen
+      );
+      setScreens(updatedScreens);
+
+      // selectedScreenを更新（selectedScreenが存在していて、編集中の画面であれば更新）
+      const screenToUpdate = updatedScreens.find(
+        (screen) => screen.id === editingScreenId
+      );
+      if (screenToUpdate && selectedScreen?.id === editingScreenId) {
+        setSelectedScreen(screenToUpdate);
+      }
+
+      setIsEditingHtml(false);
+      setEditingScreenId(null);
+    }
+  };
+
+  // 問い合わせ情報を取得する useEffect を追加
+  useEffect(() => {
+    const fetchInquiry = async () => {
+      const inquiryId = window.location.pathname.split("/").pop();
+      try {
+        const response = await axios.get(
+          `${apiBaseUrl}/api/inquirydetail/${inquiryId}`,
+          {
+            withCredentials: false,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setInquiry(response.data);
+      } catch (error) {
+        console.error("Error fetching inquiry:", error);
+      }
+    };
+
+    fetchInquiry();
+  }, [apiBaseUrl]);
+
+  // 状態に応じたテキストを返す関数
+  const getStatusText = (status: number) => {
+    switch (status) {
+      case 0:
+        return "進行中";
+      case 1:
+        return "受注済み";
+      case 2:
+        return "キャンセル済み";
+      default:
+        return "不明";
+    }
+  };
+
+  // 状態に応じた色のクラスを返す関数
+  const getStatusColor = (status: number) => {
+    switch (status) {
+      case 0:
+        return "bg-blue-100 text-blue-800";
+      case 1:
+        return "bg-green-100 text-green-800";
+      case 2:
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  useEffect(() => {
+    if (selectedScreen && selectedScreen.id === editingScreenId) {
+      setSelectedScreen({ ...selectedScreen, html: editingHtml });
+    }
+  }, [editingHtml, selectedScreen, editingScreenId]);
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <Header />
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
+          {/* 問い合わせ情報を表示 */}
+          {inquiry && (
+            <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8">
+              <h2 className="text-xl font-semibold mb-4">問い合わせ情報</h2>
+              <p>
+                <strong>問い合わせ番号:</strong> {inquiry.id}
+              </p>
+              <p>
+                <strong>名前:</strong> {inquiry.name}
+              </p>
+              <p>
+                <strong>メール:</strong> {inquiry.email}
+              </p>
+              <p>
+                <strong>内容:</strong> {inquiry.inquiry}
+              </p>
+              <p>
+                <strong>状態:</strong>
+                <span
+                  className={`ml-2 px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                    inquiry.status
+                  )}`}
+                >
+                  {getStatusText(inquiry.status)}
+                </span>
+              </p>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 gap-8">
             {/* システム設計キャンバス */}
             <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
@@ -351,12 +530,9 @@ const InquiryDetail: React.FC = () => {
                             >
                               <Eye className="h-4 w-4" />
                             </button>
-                            {/* HTML編集ボタン（実装予定） */}
+                            {/* HTML編集ボタン */}
                             <button
-                              onClick={() => {
-                                // HTMLの編集機能をここに実装
-                                alert("HTML編集機能はまだ実装されていません。");
-                              }}
+                              onClick={() => startEditingHtml(screen)}
                               className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                               title="HTMLを編集"
                             >
@@ -569,15 +745,31 @@ const InquiryDetail: React.FC = () => {
               <ArrowRight className="mr-2 h-4 w-4" />
               設計をエクスポート
             </button>
-            <button className="flex items-center px-4 py-2 bg-green-400 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              受注
-            </button>
-            <button className="flex items-center px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <Package className="mr-2 h-4 w-4" />
-              発注
-            </button>
+            {inquiry && inquiry.status === 0 && (
+              <button
+                className={`flex items-center px-4 py-2 bg-green-400 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  isAccepting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={handleAcceptOrder}
+                disabled={isAccepting}
+              >
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                {isAccepting ? "処理中..." : "受注"}
+              </button>
+            )}
+            {inquiry && inquiry.status === 1 && (
+              <span className="flex items-center px-4 py-2 bg-green-100 text-green-800 rounded">
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                受注済み
+              </span>
+            )}
+            {inquiry && inquiry.status === 2 && (
+              <span className="flex items-center px-4 py-2 bg-red-100 text-red-800 rounded">
+                キャンセル済み
+              </span>
+            )}
           </div>
+          {acceptError && <p className="mt-2 text-red-500">{acceptError}</p>}
         </div>
       </main>
 
@@ -759,6 +951,75 @@ const InquiryDetail: React.FC = () => {
                       onClick={() => setSelectedEntity(null)}
                     >
                       閉じる
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* HTML編集ダイアログ */}
+      <Transition appear show={isEditingHtml} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setIsEditingHtml(false)}
+          initialFocus={editTextareaRef}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100"
+                  >
+                    HTML編集
+                  </Dialog.Title>
+                  <div className="mt-4">
+                    <textarea
+                      ref={editTextareaRef}
+                      value={editingHtml}
+                      onChange={(e) => setEditingHtml(e.target.value)}
+                      className="w-full h-96 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
+                    />
+                  </div>
+                  <div className="mt-4 flex justify-end space-x-2">
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-400 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onClick={saveHtmlChanges}
+                    >
+                      保存
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onClick={() => setIsEditingHtml(false)}
+                    >
+                      キャンセル
                     </button>
                   </div>
                 </Dialog.Panel>

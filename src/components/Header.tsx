@@ -11,7 +11,7 @@ const Header: React.FC = () => {
             ランディングページ
           </Link>
           <Link to="/joblist" className="text-gray-700 hover:text-gray-900">
-            案件を探す
+            案件一覧
           </Link>
           <Link to="/companylist" className="text-gray-700 hover:text-gray-900">
             会社一覧
@@ -25,12 +25,12 @@ const Header: React.FC = () => {
           <Link to="/inquirylist" className="text-gray-700 hover:text-gray-900">
             問い合わせ管理
           </Link>
-          <Link
+          {/* <Link
             to="/system-preview"
             className="text-gray-700 hover:text-gray-900"
           >
             発注者利用ツール
-          </Link>
+          </Link> */}
           {/* <Link
             to="/aiassistancespecification"
             className="text-gray-700 hover:text-gray-900"
