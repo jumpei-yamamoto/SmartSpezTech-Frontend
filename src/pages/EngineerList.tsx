@@ -62,7 +62,7 @@ const EngineerList: React.FC = () => {
       <Header />
 
       <main className="container mx-auto px-4 py-8">
-        <JobFilter /> {/* JobFilterを読み込む */}
+        {/* <JobFilter /> JobFilterを読み込む */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Sidebar */}
           <aside className="md:col-span-1">
@@ -121,7 +121,7 @@ const EngineerList: React.FC = () => {
               ))}
             </div>
             <div className="flex justify-center mt-8">
-              <Pagenation />
+              {/* <Pagenation /> */}
             </div>
           </section>
         </div>

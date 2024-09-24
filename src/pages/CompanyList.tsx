@@ -157,7 +157,7 @@ const CompanyList: React.FC = () => {
               ))}
             </div>
             <div className="flex justify-center mt-8">
-              <Pagenation />
+              {/* <Pagenation /> */}
             </div>
           </section>
         </div>

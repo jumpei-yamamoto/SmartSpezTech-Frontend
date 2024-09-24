@@ -18,14 +18,19 @@ interface Inquiry {
 
 const InquiryList: React.FC = () => {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'highestRate' | 'lowestRate'>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const apiBaseUrl =
     process.env.REACT_APP_API_BASE_URL || "http://localhost:80"; // 追加
 
   useEffect(() => {
     const fetchInquiries = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(`${apiBaseUrl}/api/inquiries`, {
+        const response = await axios.get<Inquiry[]>(`${apiBaseUrl}/api/inquiries`, {
           withCredentials: false,
           headers: {
             "Content-Type": "application/json",
@@ -34,6 +39,8 @@ const InquiryList: React.FC = () => {
         setInquiries(response.data);
       } catch (error) {
         console.error("Error fetching inquiries:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -66,6 +73,26 @@ const InquiryList: React.FC = () => {
     }
   };
 
+  const getFilteredAndSortedInquiries = () => {
+    let filteredInquiries = [...inquiries];
+
+    switch (sortOrder) {
+      case 'newest':
+        filteredInquiries.sort((a, b) => b.id - a.id);
+        break;
+      case 'oldest':
+        filteredInquiries.sort((a, b) => a.id - b.id);
+        break;
+      // 他のソートオプションは必要に応じて実装
+    }
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredInquiries.slice(startIndex, endIndex);
+  };
+
+  const filteredInquiries = getFilteredAndSortedInquiries();
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
@@ -79,42 +106,57 @@ const InquiryList: React.FC = () => {
 
           {/* Inquiry Listings */}
           <section className="md:col-span-3">
-            <JobFilter />
-            {inquiries.map((inquiry) => (
-              <div
-                key={inquiry.id}
-                className="bg-white p-6 rounded-lg shadow-lg flex mb-6"
-              >
-                <div className="ml-6 flex-grow">
-                  <div className="flex justify-between items-center mb-2">
-                    <div>
-                      <h3 className="font-bold text-xl mb-1">
-                        問い合わせ番号:{" "}
-                        <Link
-                          to={`/inquirydetail/${inquiry.id}`}
-                          className="text-blue-600 hover:text-blue-800 hover:underline"
-                        >
-                          {inquiry.id}
-                        </Link>
-                      </h3>
-                      <p className="text-gray-500">{inquiry.name}</p>
-                      <p className="text-gray-500">{inquiry.email}</p>
+            <JobFilter
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={setItemsPerPage}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+              totalJobs={inquiries.length}
+              currentPage={currentPage}
+            />
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              filteredInquiries.map((inquiry) => (
+                <div
+                  key={inquiry.id}
+                  className="bg-white p-6 rounded-lg shadow-lg flex mb-6"
+                >
+                  <div className="ml-6 flex-grow">
+                    <div className="flex justify-between items-center mb-2">
+                      <div>
+                        <h3 className="font-bold text-xl mb-1">
+                          問い合わせ番号:{" "}
+                          <Link
+                            to={`/inquirydetail/${inquiry.id}`}
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            {inquiry.id}
+                          </Link>
+                        </h3>
+                        <p className="text-gray-500">{inquiry.name}</p>
+                        <p className="text-gray-500">{inquiry.email}</p>
+                      </div>
+                      <div
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                          inquiry.status
+                        )}`}
+                      >
+                        {getStatusText(inquiry.status)}
+                      </div>
                     </div>
-                    <div
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                        inquiry.status
-                      )}`}
-                    >
-                      {getStatusText(inquiry.status)}
-                    </div>
+                    <p className="text-gray-600 mb-4">{inquiry.inquiry}</p>
                   </div>
-                  <p className="text-gray-600 mb-4">{inquiry.inquiry}</p>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
 
             <div className="flex justify-center mt-8">
-              <Pagenation />
+              <Pagenation
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                totalPages={Math.ceil(inquiries.length / itemsPerPage)}
+              />
             </div>
           </section>
         </div>

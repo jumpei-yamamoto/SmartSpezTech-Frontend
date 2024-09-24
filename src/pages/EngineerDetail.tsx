@@ -252,7 +252,7 @@ const EngineerDetail: React.FC = () => {
                 </div>
               </div>
 
-              <Pagenation />
+              {/* <Pagenation /> */}
             </section>
 
             {/* 右サイドバー */}

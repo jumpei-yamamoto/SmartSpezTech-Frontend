@@ -198,7 +198,7 @@ const CompanyDetail: React.FC = () => {
                 </div>
               </div>
 
-              <Pagenation />
+              {/* <Pagenation /> */}
             </section>
 
             {/* Right Sidebar */}
