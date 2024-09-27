@@ -190,6 +190,7 @@ const InquiryDetail: React.FC = () => {
   const [acceptError, setAcceptError] = useState<string | null>(null);
   const [isEditingHtml, setIsEditingHtml] = useState(false);
   const [editingScreenId, setEditingScreenId] = useState<number | null>(null);
+  const [editingEventId, setEditingEventId] = useState<number | null>(null);
   const [editingHtml, setEditingHtml] = useState("");
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -199,10 +200,24 @@ const InquiryDetail: React.FC = () => {
   // 問い合わせ情報の state を追加
   const [inquiry, setInquiry] = useState<Inquiry | null>(null);
 
+  // 新しい state を追加
+  const [editingEventField, setEditingEventField] = useState<string | null>(
+    null
+  );
+  const [editingEventValue, setEditingEventValue] = useState("");
+
   const handleScreenTitleChange = (id: number, newName: string) => {
     setScreens((prevScreens) =>
       prevScreens.map((screen) =>
         screen.id === id ? { ...screen, name: newName } : screen
+      )
+    );
+  };
+
+  const handleEventTitleChange = (id: number, newName: string) => {
+    setEventsList((prevEvents) =>
+      prevEvents.map((event) =>
+        event.id === id ? { ...event, name: newName } : event
       )
     );
   };
@@ -259,7 +274,7 @@ const InquiryDetail: React.FC = () => {
   };
 
   const addRelation = () => {
-    if (entities.length < 2) return; // リレーションを追加するには少なくとも2つのエンティティが必要
+    if (entities.length < 2) return; // リレーションを追加するには少なくも2つのエンティティが��要
     const newRelation: Relation = {
       id: relations.length + 1,
       from: entities[0].name,
@@ -602,9 +617,25 @@ const InquiryDetail: React.FC = () => {
                           key={event.id}
                           className="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow"
                         >
-                          <span className="text-gray-800 dark:text-gray-200">
-                            {event.name}
-                          </span>
+                          {editingEventId === event.id ? (
+                            <input
+                              type="text"
+                              value={event.name}
+                              onChange={(e) =>
+                                handleEventTitleChange(event.id, e.target.value)
+                              }
+                              onBlur={() => setEditingEventId(null)}
+                              className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 rounded p-2 focus:outline-none"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() => setEditingEventId(event.id)}
+                              className="text-gray-700 dark:text-gray-200 cursor-pointer"
+                            >
+                              {event.name}
+                            </span>
+                          )}
                           <div className="flex space-x-2">
                             {/* 詳細表示ボタン */}
                             <button
@@ -626,7 +657,7 @@ const InquiryDetail: React.FC = () => {
                         </div>
                       ))}
                     </div>
-                    {/* イベント追加ボタン */}
+                    {/* イベント追加���タン */}
                     <button
                       onClick={addEvent}
                       className="mt-4 flex items-center px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -872,7 +903,10 @@ const InquiryDetail: React.FC = () => {
         <Dialog
           as="div"
           className="relative z-10"
-          onClose={() => setSelectedEvent(null)}
+          onClose={() => {
+            setSelectedEvent(null);
+            setEditingEventField(null);
+          }}
         >
           <Transition.Child
             as={Fragment}
@@ -902,21 +936,140 @@ const InquiryDetail: React.FC = () => {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100"
                   >
-                    {selectedEvent?.name}
+                    {editingEventField === "name" ? (
+                      <input
+                        type="text"
+                        value={editingEventValue}
+                        onChange={(e) => setEditingEventValue(e.target.value)}
+                        onBlur={() => {
+                          if (selectedEvent) {
+                            const updatedEvent = {
+                              ...selectedEvent,
+                              name: editingEventValue,
+                            };
+                            setEventsList(
+                              eventsList.map((e) =>
+                                e.id === updatedEvent.id ? updatedEvent : e
+                              )
+                            );
+                            setSelectedEvent(updatedEvent);
+                          }
+                          setEditingEventField(null);
+                        }}
+                        className="w-full p-1 border rounded"
+                        autoFocus
+                      />
+                    ) : (
+                      <span
+                        onDoubleClick={() => {
+                          setEditingEventField("name");
+                          setEditingEventValue(selectedEvent?.name || "");
+                        }}
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                      >
+                        {selectedEvent?.name || "イベント名を入力"}
+                      </span>
+                    )}
                   </Dialog.Title>
                   <div className="mt-4">
                     <p>
-                      <strong>関連画面:</strong> {selectedEvent?.screen}
+                      <strong
+                        onDoubleClick={() => {
+                          setEditingEventField("screen");
+                          setEditingEventValue(selectedEvent?.screen || "");
+                        }}
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                      >
+                        関連画面:
+                      </strong>{" "}
+                      {editingEventField === "screen" ? (
+                        <input
+                          type="text"
+                          value={editingEventValue}
+                          onChange={(e) => setEditingEventValue(e.target.value)}
+                          onBlur={() => {
+                            if (selectedEvent) {
+                              const updatedEvent = {
+                                ...selectedEvent,
+                                screen: editingEventValue,
+                              };
+                              setEventsList(
+                                eventsList.map((e) =>
+                                  e.id === updatedEvent.id ? updatedEvent : e
+                                )
+                              );
+                              setSelectedEvent(updatedEvent);
+                            }
+                            setEditingEventField(null);
+                          }}
+                          className="w-full p-1 border rounded"
+                          autoFocus
+                        />
+                      ) : (
+                        <span
+                          onDoubleClick={() => {
+                            setEditingEventField("screen");
+                            setEditingEventValue(selectedEvent?.screen || "");
+                          }}
+                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                        >
+                          {selectedEvent?.screen || "関連画面を入力"}
+                        </span>
+                      )}
                     </p>
                     <p>
-                      <strong>処理内容:</strong> {selectedEvent?.process}
+                      <strong
+                        onDoubleClick={() => {
+                          setEditingEventField("process");
+                          setEditingEventValue(selectedEvent?.process || "");
+                        }}
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                      >
+                        処理内容:
+                      </strong>{" "}
+                      {editingEventField === "process" ? (
+                        <textarea
+                          value={editingEventValue}
+                          onChange={(e) => setEditingEventValue(e.target.value)}
+                          onBlur={() => {
+                            if (selectedEvent) {
+                              const updatedEvent = {
+                                ...selectedEvent,
+                                process: editingEventValue,
+                              };
+                              setEventsList(
+                                eventsList.map((e) =>
+                                  e.id === updatedEvent.id ? updatedEvent : e
+                                )
+                              );
+                              setSelectedEvent(updatedEvent);
+                            }
+                            setEditingEventField(null);
+                          }}
+                          className="w-full p-1 border rounded"
+                          autoFocus
+                        />
+                      ) : (
+                        <span
+                          onDoubleClick={() => {
+                            setEditingEventField("process");
+                            setEditingEventValue(selectedEvent?.process || "");
+                          }}
+                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                        >
+                          {selectedEvent?.process || "処理内容を入力"}
+                        </span>
+                      )}
                     </p>
                   </div>
                   <div className="mt-4 flex justify-end">
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-400 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      onClick={() => setSelectedEvent(null)}
+                      onClick={() => {
+                        setSelectedEvent(null);
+                        setEditingEventField(null);
+                      }}
                     >
                       閉じる
                     </button>
