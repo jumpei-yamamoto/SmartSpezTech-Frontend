@@ -199,6 +199,14 @@ const InquiryDetail: React.FC = () => {
   // 問い合わせ情報の state を追加
   const [inquiry, setInquiry] = useState<Inquiry | null>(null);
 
+  const handleScreenTitleChange = (id: number, newName: string) => {
+    setScreens((prevScreens) =>
+      prevScreens.map((screen) =>
+        screen.id === id ? { ...screen, name: newName } : screen
+      )
+    );
+  };
+
   const handleAiQuery = () => {
     // 実際のAI統合ロジックに置き換えてください
     setAiResponse({
@@ -518,9 +526,30 @@ const InquiryDetail: React.FC = () => {
                           key={screen.id}
                           className="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow"
                         >
-                          <span className="text-gray-800 dark:text-gray-200">
-                            {screen.name}
-                          </span>
+                          {editingScreenId === screen.id ? (
+                            <input
+                              type="text"
+                              value={screen.name}
+                              onChange={(e) =>
+                                handleScreenTitleChange(
+                                  screen.id,
+                                  e.target.value
+                                )
+                              }
+                              onBlur={() => setEditingScreenId(null)}
+                              className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 rounded p-2 focus:outline-none"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() =>
+                                setEditingScreenId(screen.id)
+                              }
+                              className="text-gray-700 dark:text-gray-200 cursor-pointer"
+                            >
+                              {screen.name}
+                            </span>
+                          )}
                           <div className="flex space-x-2">
                             {/* プレビューボタン */}
                             <button
