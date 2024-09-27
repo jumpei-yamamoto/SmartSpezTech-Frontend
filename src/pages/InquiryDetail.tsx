@@ -219,6 +219,12 @@ const InquiryDetail: React.FC = () => {
   >(null);
   const [editingRelationValue, setEditingRelationValue] = useState("");
 
+  const [estimate, setEstimate] = useState<{
+    screens: { workload: string; difficulty: number; tests: string[] }[];
+    events: { workload: string; difficulty: number; tests: string[] }[];
+    database: { workload: string; difficulty: number; tests: string[] };
+  } | null>(null);
+
   const handleScreenTitleChange = (id: number, newName: string) => {
     setScreens((prevScreens) =>
       prevScreens.map((screen) =>
@@ -235,26 +241,40 @@ const InquiryDetail: React.FC = () => {
     );
   };
 
-  const handleAiQuery = () => {
+  const handleAiEstimate = async () => {
     // 実際のAI統合ロジックに置き換えてください
-    setAiResponse({
-      features: [
-        "ユーザー認証機能",
-        "ダッシュボード表示",
-        "注文管理システム",
-        "売上レポート生成",
-        "タスク管理機能",
-        "商品在庫管理",
-      ],
-      requirements: [
-        "ユーザーログインが正常に機能すること",
-        "ダッシュボードが最新のデータを表示すること",
-        "注文詳細が正確に表示されること",
-        "売上レポートがPDF形式で出力できること",
-        "タスクの追加、編集、完了が正しく機能すること",
-        "商品在庫が注文処理時に適切に更新されること",
-      ],
-    });
+    // ここでは、モックデータを使用しています
+    const mockEstimate = {
+      screens: screens.map((screen) => ({
+        workload: `${Math.floor(Math.random() * 5) + 1}日`,
+        difficulty: Math.floor(Math.random() * 10) + 1,
+        tests: [
+          "レスポンシブデザインのテスト",
+          "クロスブラウザ互換性テスト",
+          "アクセシビリティテスト",
+        ],
+      })),
+      events: eventsList.map((event) => ({
+        workload: `${Math.floor(Math.random() * 3) + 1}日`,
+        difficulty: Math.floor(Math.random() * 10) + 1,
+        tests: [
+          "イベントトリガーのテスト",
+          "エラーハンドリングのテスト",
+          "パフォーマンステスト",
+        ],
+      })),
+      database: {
+        workload: `${Math.floor(Math.random() * 7) + 3}日`,
+        difficulty: Math.floor(Math.random() * 10) + 1,
+        tests: [
+          "データ整合性テスト",
+          "パフォーマンステスト",
+          "バックアップとリカバリテスト",
+        ],
+      },
+    };
+
+    setEstimate(mockEstimate);
   };
 
   const addScreen = () => {
@@ -670,7 +690,7 @@ const InquiryDetail: React.FC = () => {
                         </div>
                       ))}
                     </div>
-                    {/* イント追加タ��� */}
+                    {/* イント追加タ */}
                     <button
                       onClick={addEvent}
                       className="mt-4 flex items-center px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -786,40 +806,67 @@ const InquiryDetail: React.FC = () => {
             {/* AIアシスタント */}
             <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">AIアシスタント</h2>
-              <textarea
-                placeholder="システム設計に関する質問を入力してください"
-                value={aiQuery}
-                onChange={(e) => setAiQuery(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
-                rows={5}
-              />
               <button
-                onClick={handleAiQuery}
+                onClick={handleAiEstimate}
                 className="w-full flex items-center justify-center mt-4 px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <Send className="mr-2 h-4 w-4" />
-                AIに問い合わせ
+                <Package className="mr-2 h-4 w-4" />
+                AIで見積もる
               </button>
-              <div className="space-y-4 mt-4">
-                <div>
-                  <h3 className="font-medium text-lg mb-2">必要な機能：</h3>
-                  <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
-                    {aiResponse.features.map((feature, index) => (
-                      <li key={index}>{feature}</li>
-                    ))}
-                  </ul>
+              {estimate && (
+                <div className="space-y-4 mt-4">
+                  <div>
+                    <h3 className="font-medium text-lg mb-2">
+                      画面デザイン見積もり：
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                      {estimate.screens.map((screen, index) => (
+                        <li key={index}>
+                          画面{index + 1}: 工数 {screen.workload}, 難易度{" "}
+                          {screen.difficulty}/10
+                          <ul className="list-circle pl-5">
+                            {screen.tests.map((test, testIndex) => (
+                              <li key={testIndex}>{test}</li>
+                            ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg mb-2">
+                      イベントフロー見積もり：
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                      {estimate.events.map((event, index) => (
+                        <li key={index}>
+                          イベント{index + 1}: 工数 {event.workload}, 難易度{" "}
+                          {event.difficulty}/10
+                          <ul className="list-circle pl-5">
+                            {event.tests.map((test, testIndex) => (
+                              <li key={testIndex}>{test}</li>
+                            ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg mb-2">
+                      DB設計見積もり：
+                    </h3>
+                    <p>
+                      工数 {estimate.database.workload}, 難易度{" "}
+                      {estimate.database.difficulty}/10
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                      {estimate.database.tests.map((test, index) => (
+                        <li key={index}>{test}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-medium text-lg mb-2">
-                    成果物の要件（テスト項目）：
-                  </h3>
-                  <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
-                    {aiResponse.requirements.map((req, index) => (
-                      <li key={index}>{req}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
