@@ -206,6 +206,19 @@ const InquiryDetail: React.FC = () => {
   );
   const [editingEventValue, setEditingEventValue] = useState("");
 
+  const [editingEntityField, setEditingEntityField] = useState<string | null>(
+    null
+  );
+  const [editingEntityValue, setEditingEntityValue] = useState("");
+
+  const [selectedRelation, setSelectedRelation] = useState<Relation | null>(
+    null
+  );
+  const [editingRelationField, setEditingRelationField] = useState<
+    string | null
+  >(null);
+  const [editingRelationValue, setEditingRelationValue] = useState("");
+
   const handleScreenTitleChange = (id: number, newName: string) => {
     setScreens((prevScreens) =>
       prevScreens.map((screen) =>
@@ -274,7 +287,7 @@ const InquiryDetail: React.FC = () => {
   };
 
   const addRelation = () => {
-    if (entities.length < 2) return; // リレーションを追加するには少なくも2つのエンティティが��要
+    if (entities.length < 2) return; // リレーションを追加するには少なくも2つのエンティティが要
     const newRelation: Relation = {
       id: relations.length + 1,
       from: entities[0].name,
@@ -657,7 +670,7 @@ const InquiryDetail: React.FC = () => {
                         </div>
                       ))}
                     </div>
-                    {/* イベント追加���タン */}
+                    {/* イント追加タ��� */}
                     <button
                       onClick={addEvent}
                       className="mt-4 flex items-center px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -727,13 +740,24 @@ const InquiryDetail: React.FC = () => {
                           <span className="text-gray-800 dark:text-gray-200">
                             {relation.from} - {relation.type} - {relation.to}
                           </span>
-                          <button
-                            onClick={() => removeRelation(relation.id)}
-                            className="text-red-500 hover:text-red-700"
-                            title="リレーションを削除"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                          <div className="flex space-x-2">
+                            {/* 詳細表示ボタン */}
+                            <button
+                              onClick={() => setSelectedRelation(relation)}
+                              className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                              title="リレーションの詳細を表示"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            {/* 削除ボタン */}
+                            <button
+                              onClick={() => removeRelation(relation.id)}
+                              className="text-red-500 hover:text-red-700"
+                              title="リレーションを削除"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -1086,7 +1110,10 @@ const InquiryDetail: React.FC = () => {
         <Dialog
           as="div"
           className="relative z-10"
-          onClose={() => setSelectedEntity(null)}
+          onClose={() => {
+            setSelectedEntity(null);
+            setEditingEntityField(null);
+          }}
         >
           <Transition.Child
             as={Fragment}
@@ -1116,13 +1143,89 @@ const InquiryDetail: React.FC = () => {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100"
                   >
-                    {selectedEntity?.name}
+                    {editingEntityField === "name" ? (
+                      <input
+                        type="text"
+                        value={editingEntityValue}
+                        onChange={(e) => setEditingEntityValue(e.target.value)}
+                        onBlur={() => {
+                          if (selectedEntity) {
+                            const updatedEntity = {
+                              ...selectedEntity,
+                              name: editingEntityValue,
+                            };
+                            setEntities(
+                              entities.map((e) =>
+                                e.id === updatedEntity.id ? updatedEntity : e
+                              )
+                            );
+                            setSelectedEntity(updatedEntity);
+                          }
+                          setEditingEntityField(null);
+                        }}
+                        className="w-full p-1 border rounded"
+                        autoFocus
+                      />
+                    ) : (
+                      <span
+                        onDoubleClick={() => {
+                          setEditingEntityField("name");
+                          setEditingEntityValue(selectedEntity?.name || "");
+                        }}
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                      >
+                        {selectedEntity?.name || "エンティティ名を入力"}
+                      </span>
+                    )}
                   </Dialog.Title>
                   <div className="mt-4">
                     <h3 className="font-semibold mb-2">属性:</h3>
                     <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
                       {selectedEntity?.attributes.map((attr, index) => (
-                        <li key={index}>{attr}</li>
+                        <li key={index}>
+                          {editingEntityField === `attribute-${index}` ? (
+                            <input
+                              type="text"
+                              value={editingEntityValue}
+                              onChange={(e) =>
+                                setEditingEntityValue(e.target.value)
+                              }
+                              onBlur={() => {
+                                if (selectedEntity) {
+                                  const updatedAttributes = [
+                                    ...selectedEntity.attributes,
+                                  ];
+                                  updatedAttributes[index] = editingEntityValue;
+                                  const updatedEntity = {
+                                    ...selectedEntity,
+                                    attributes: updatedAttributes,
+                                  };
+                                  setEntities(
+                                    entities.map((e) =>
+                                      e.id === updatedEntity.id
+                                        ? updatedEntity
+                                        : e
+                                    )
+                                  );
+                                  setSelectedEntity(updatedEntity);
+                                }
+                                setEditingEntityField(null);
+                              }}
+                              className="w-full p-1 border rounded"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() => {
+                                setEditingEntityField(`attribute-${index}`);
+                                setEditingEntityValue(attr);
+                              }}
+                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                            >
+                              {attr}
+                            </span>
+                          )}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -1130,7 +1233,198 @@ const InquiryDetail: React.FC = () => {
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-400 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      onClick={() => setSelectedEntity(null)}
+                      onClick={() => {
+                        setSelectedEntity(null);
+                        setEditingEntityField(null);
+                      }}
+                    >
+                      閉じる
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* リレーション詳細ダイアログ */}
+      <Transition appear show={selectedRelation !== null} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => {
+            setSelectedRelation(null);
+            setEditingRelationField(null);
+          }}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100"
+                  >
+                    リレーション詳細
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      From:{" "}
+                      {editingRelationField === "from" ? (
+                        <input
+                          type="text"
+                          value={editingRelationValue}
+                          onChange={(e) =>
+                            setEditingRelationValue(e.target.value)
+                          }
+                          onBlur={() => {
+                            if (selectedRelation) {
+                              const updatedRelation = {
+                                ...selectedRelation,
+                                from: editingRelationValue,
+                              };
+                              setRelations(
+                                relations.map((r) =>
+                                  r.id === updatedRelation.id
+                                    ? updatedRelation
+                                    : r
+                                )
+                              );
+                              setSelectedRelation(updatedRelation);
+                            }
+                            setEditingRelationField(null);
+                          }}
+                          className="w-full p-1 border rounded"
+                          autoFocus
+                        />
+                      ) : (
+                        <span
+                          onDoubleClick={() => {
+                            setEditingRelationField("from");
+                            setEditingRelationValue(
+                              selectedRelation?.from || ""
+                            );
+                          }}
+                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                        >
+                          {selectedRelation?.from}
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      To:{" "}
+                      {editingRelationField === "to" ? (
+                        <input
+                          type="text"
+                          value={editingRelationValue}
+                          onChange={(e) =>
+                            setEditingRelationValue(e.target.value)
+                          }
+                          onBlur={() => {
+                            if (selectedRelation) {
+                              const updatedRelation = {
+                                ...selectedRelation,
+                                to: editingRelationValue,
+                              };
+                              setRelations(
+                                relations.map((r) =>
+                                  r.id === updatedRelation.id
+                                    ? updatedRelation
+                                    : r
+                                )
+                              );
+                              setSelectedRelation(updatedRelation);
+                            }
+                            setEditingRelationField(null);
+                          }}
+                          className="w-full p-1 border rounded"
+                          autoFocus
+                        />
+                      ) : (
+                        <span
+                          onDoubleClick={() => {
+                            setEditingRelationField("to");
+                            setEditingRelationValue(selectedRelation?.to || "");
+                          }}
+                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                        >
+                          {selectedRelation?.to}
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Type:{" "}
+                      {editingRelationField === "type" ? (
+                        <input
+                          type="text"
+                          value={editingRelationValue}
+                          onChange={(e) =>
+                            setEditingRelationValue(e.target.value)
+                          }
+                          onBlur={() => {
+                            if (selectedRelation) {
+                              const updatedRelation = {
+                                ...selectedRelation,
+                                type: editingRelationValue,
+                              };
+                              setRelations(
+                                relations.map((r) =>
+                                  r.id === updatedRelation.id
+                                    ? updatedRelation
+                                    : r
+                                )
+                              );
+                              setSelectedRelation(updatedRelation);
+                            }
+                            setEditingRelationField(null);
+                          }}
+                          className="w-full p-1 border rounded"
+                          autoFocus
+                        />
+                      ) : (
+                        <span
+                          onDoubleClick={() => {
+                            setEditingRelationField("type");
+                            setEditingRelationValue(
+                              selectedRelation?.type || ""
+                            );
+                          }}
+                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                        >
+                          {selectedRelation?.type}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-400 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onClick={() => {
+                        setSelectedRelation(null);
+                        setEditingRelationField(null);
+                      }}
                     >
                       閉じる
                     </button>
