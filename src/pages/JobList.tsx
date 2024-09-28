@@ -8,16 +8,20 @@ import Pagenation from "../components/Pagenation";
 import axios from "axios";
 
 // 新しい型定義を追加
+type Screen = {
+  title: string;
+  description: string;
+  catchphrase: string;
+  preview: string;
+};
+
 type Job = {
   id: number;
-  screen: {
-    title: string;
-    description: string;
-    catchphrase: string;
-    preview: string;
-  };
   name: string;
   email: string;
+  inquiry: string;
+  status: number;
+  screens: Screen[];
 };
 
 const JobList: React.FC = () => {
@@ -46,6 +50,8 @@ const JobList: React.FC = () => {
             },
           }
         );
+        // レスポンスデータをログに出力
+        console.log("API Response:", response.data);
         setJobs(response.data);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 0) {
@@ -65,17 +71,29 @@ const JobList: React.FC = () => {
     fetchJobs();
   }, [apiBaseUrl]);
 
-  // フィルタリングと並べ替えを行う関数
-  const getFilteredAndSortedJobs = () => {
-    let filteredJobs = [...jobs];
+  // getAllScreens 関数を修正
+  const getAllScreens = () => {
+    return jobs.flatMap((job) =>
+      job.screens.map((screen) => ({
+        ...screen,
+        jobId: job.id,
+        jobName: job.name,
+        jobEmail: job.email,
+      }))
+    );
+  };
+
+  // フィルタリングと並べ替えを行う関数を更新
+  const getFilteredAndSortedScreens = () => {
+    let allScreens = getAllScreens();
 
     // ソート順の適用
     switch (sortOrder) {
       case "newest":
-        filteredJobs.sort((a, b) => b.id - a.id);
+        allScreens.sort((a, b) => b.jobId - a.jobId);
         break;
       case "oldest":
-        filteredJobs.sort((a, b) => a.id - b.id);
+        allScreens.sort((a, b) => a.jobId - b.jobId);
         break;
       // 注: 高単価と低単価のソートは、実際のデータ構造に応じて調整が必要です
       case "highestRate":
@@ -87,10 +105,13 @@ const JobList: React.FC = () => {
     // ページネーションの適用
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredJobs.slice(startIndex, endIndex);
+    return allScreens.slice(startIndex, endIndex);
   };
 
-  const filteredJobs = getFilteredAndSortedJobs();
+  const filteredScreens = getFilteredAndSortedScreens();
+
+  // レンダリング前にfilteredScreensをログに出力
+  console.log("Filtered Screens:", filteredScreens);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -108,39 +129,37 @@ const JobList: React.FC = () => {
               setItemsPerPage={setItemsPerPage}
               sortOrder={sortOrder}
               setSortOrder={setSortOrder}
-              totalJobs={jobs.length}
+              totalJobs={getAllScreens().length}
               currentPage={currentPage}
             />
 
             {loading ? (
               <p>Loading...</p>
             ) : (
-              filteredJobs.map((job) => (
+              filteredScreens.map((screen, index) => (
                 <div
-                  key={job.id}
-                  className="bg-white p-6 rounded-lg shadow-lg flex mb-6"
+                  key={`${screen.jobId}-${index}`}
+                  className="bg-white p-6 rounded-lg shadow-lg flex flex-col mb-6"
                 >
-                  <div className="ml-6 flex-grow">
-                    <div className="flex justify-between items-center mb-2">
-                      <div>
-                        <Link
-                          to={`/jobdetail/${job.id}`}
-                          className="font-bold text-xl mb-1"
-                        >
-                          {job.screen.title}
-                        </Link>
-                        <p className="text-gray-500">案件番号: {job.id}</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 mb-4">
-                      {job.screen.description}
+                  <div className="mb-4">
+                    <Link
+                      to={`/jobdetail/${screen.jobId}`}
+                      className="font-bold text-xl mb-1"
+                    >
+                      案件番号: {screen.jobId}
+                    </Link>
+                  </div>
+                  <div className="mb-4 pb-4">
+                    <h3 className="font-semibold text-lg mb-2">
+                      {screen.title || "No Title"}
+                    </h3>
+                    <p className="text-gray-600 mb-2">
+                      {screen.description || "No Description"}
                     </p>
                     <div className="flex justify-between items-center">
-                      <div>
-                        <span className="text-purple-300 font-bold">
-                          {job.screen.catchphrase}
-                        </span>
-                      </div>
+                      <span className="text-purple-300 font-bold">
+                        {screen.catchphrase || "No Catchphrase"}
+                      </span>
                       <button className="bg-purple-400 text-white px-4 py-2 rounded">
                         今すぐ応募
                       </button>
@@ -154,7 +173,7 @@ const JobList: React.FC = () => {
               <Pagenation
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
-                totalPages={Math.ceil(jobs.length / itemsPerPage)}
+                totalPages={Math.ceil(getAllScreens().length / itemsPerPage)}
               />
             </div>
           </section>
