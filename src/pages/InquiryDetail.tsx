@@ -328,6 +328,7 @@ const InquiryDetail: React.FC = () => {
       events: eventsList,
       entities,
       relations,
+      estimate: editingEstimate,
     };
 
     try {
@@ -441,6 +442,7 @@ const InquiryDetail: React.FC = () => {
       events: eventsList,
       entities: entities,
       relations: relations,
+      aiEstimate: editingEstimate, // AI見積もり結果を追加
     };
 
     try {
