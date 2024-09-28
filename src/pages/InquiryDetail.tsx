@@ -80,7 +80,7 @@ const InquiryDetail: React.FC = () => {
                   </div>
                   <div class="bg-white p-4 rounded-md shadow">
                     <h2 class="text-lg font-semibold mb-2">売上統計</h2>
-                    <div class="h-40 bg-gray-200 flex items-center justify-center">グラフ表示エリア</div>
+                    <div class="h-40 bg-gray-200 flex items-center justify-center">グラフ表示エア</div>
                   </div>
                   <div class="bg-white p-4 rounded-md shadow">
                     <h2 class="text-lg font-semibold mb-2">タスク</h2>
@@ -311,9 +311,17 @@ const InquiryDetail: React.FC = () => {
         return prevScreen;
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      alert("HTMLが正常に保存されました。");
+      // APIを呼び出してサーバー側でも更新を行う
+      try {
+        await axios.post(`${apiBaseUrl}/api/update-screen-html`, {
+          screenId: editingScreenId,
+          html: editingHtml,
+        });
+        alert("HTMLが正常に保存されました。");
+      } catch (error) {
+        console.error("Error saving HTML:", error);
+        alert("HTMLの保存中にエラーが発生しました。");
+      }
     } else {
       console.error("editingScreenId is null, no updates performed");
     }
@@ -511,6 +519,25 @@ const InquiryDetail: React.FC = () => {
           }
         );
         setInquiry(response.data);
+
+        // 取得したデータを使用して他の状態を更新
+        if (response.data.screens) {
+          const formattedScreens = response.data.screens.map((screen: any) => ({
+            id: screen.id,
+            name: screen.title || `画面${screen.id}`,
+            html:
+              screen.preview || `<div>画面${screen.id}のデフォルトHTML</div>`,
+            events: screen.events || [],
+          }));
+          setScreens(formattedScreens);
+        }
+        if (response.data.events) setEventsList(response.data.events);
+        if (response.data.entities) setEntities(response.data.entities);
+        if (response.data.relations) setRelations(response.data.relations);
+        if (response.data.estimate) {
+          setEstimate(response.data.estimate);
+          setEditingEstimate(response.data.estimate);
+        }
       } catch (error) {
         console.error("Error fetching inquiry:", error);
       }
@@ -532,33 +559,37 @@ const InquiryDetail: React.FC = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
           {/* 問い合わせ情報を表示 */}
-          {inquiry && (
-            <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8">
-              <h2 className="text-xl font-semibold mb-4">問い合わせ情報</h2>
-              <p>
-                <strong>問い合わせ番号:</strong> {inquiry.id}
-              </p>
-              <p>
-                <strong>名前:</strong> {inquiry.name}
-              </p>
-              <p>
-                <strong>メール:</strong> {inquiry.email}
-              </p>
-              <p>
-                <strong>内容:</strong> {inquiry.inquiry}
-              </p>
-              <p>
-                <strong>状態:</strong>
-                <span
-                  className={`ml-2 px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                    inquiry.status
-                  )}`}
-                >
-                  {getStatusText(inquiry.status)}
-                </span>
-              </p>
-            </div>
-          )}
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8">
+            <h2 className="text-xl font-semibold mb-4">問い合わせ情報</h2>
+            {inquiry ? (
+              <>
+                <p>
+                  <strong>問い合わせ番号:</strong> {inquiry.id}
+                </p>
+                <p>
+                  <strong>名前:</strong> {inquiry.name}
+                </p>
+                <p>
+                  <strong>メール:</strong> {inquiry.email}
+                </p>
+                <p>
+                  <strong>内容:</strong> {inquiry.inquiry}
+                </p>
+                <p>
+                  <strong>状態:</strong>
+                  <span
+                    className={`ml-2 px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                      inquiry.status
+                    )}`}
+                  >
+                    {getStatusText(inquiry.status)}
+                  </span>
+                </p>
+              </>
+            ) : (
+              <p>データを読み込んでいます...</p>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 gap-8">
             {/* システム設計キャンバス */}
