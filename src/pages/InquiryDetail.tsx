@@ -190,6 +190,9 @@ const InquiryDetail: React.FC = () => {
   const [acceptError, setAcceptError] = useState<string | null>(null);
   const [isEditingHtml, setIsEditingHtml] = useState(false);
   const [editingScreenId, setEditingScreenId] = useState<number | null>(null);
+  const [editingScreenNameId, setEditingScreenNameId] = useState<number | null>(
+    null
+  );
   const [editingEventId, setEditingEventId] = useState<number | null>(null);
   const [editingHtml, setEditingHtml] = useState("");
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -221,11 +224,17 @@ const InquiryDetail: React.FC = () => {
 
   const [estimate, setEstimate] = useState<{
     screens: {
-      [key: string]: { workload: string; difficulty: number; tests: string[] };
-    };
+      name: string;
+      workload: string;
+      difficulty: number;
+      tests: string[];
+    }[];
     events: {
-      [key: string]: { workload: string; difficulty: number; tests: string[] };
-    };
+      name: string;
+      workload: string;
+      difficulty: number;
+      tests: string[];
+    }[];
     database: { workload: string; difficulty: number; tests: string[] };
   } | null>(null);
 
@@ -284,13 +293,16 @@ const InquiryDetail: React.FC = () => {
   };
 
   const addScreen = () => {
+    const newScreenId = Math.max(...screens.map((screen) => screen.id), 0) + 1;
     const newScreen: Screen = {
-      id: screens.length + 1,
-      name: `新規画面${screens.length + 1}`,
+      id: newScreenId,
+      name: `新規画面${newScreenId}`,
       html: `<div class="min-h-screen bg-gray-100 p-6"><h1 class="text-2xl font-bold text-gray-700 mb-4">新規画面</h1><p>ここに画面の内容を追加してください。</p></div>`,
       events: [],
     };
-    setScreens([...screens, newScreen]);
+
+    setScreens((prevScreens) => [...prevScreens, newScreen]);
+    startEditingHtml(newScreen); // 新規画面を即座に編集モードにする
   };
 
   const addEvent = () => {
@@ -313,7 +325,7 @@ const InquiryDetail: React.FC = () => {
   };
 
   const addRelation = () => {
-    if (entities.length < 2) return; // リレーションを追加するには少なくも2つのエンティティが要
+    if (entities.length < 2) return; // リレーションを追加するには少なくも2つのエンティティが必要
     const newRelation: Relation = {
       id: relations.length + 1,
       from_: entities[0].name,
@@ -403,27 +415,37 @@ const InquiryDetail: React.FC = () => {
     setIsEditingHtml(true);
   };
 
-  const saveHtmlChanges = () => {
+  const saveHtmlChanges = async () => {
     if (editingScreenId !== null) {
-      // screensを更新
-      const updatedScreens = screens.map((screen) =>
-        screen.id === editingScreenId
-          ? { ...screen, html: editingHtml }
-          : screen
+      // フロント内でスクリーンのHTMLを更新
+      setScreens((prevScreens) =>
+        prevScreens.map((screen) =>
+          screen.id === editingScreenId
+            ? { ...screen, html: editingHtml }
+            : screen
+        )
       );
-      setScreens(updatedScreens);
 
-      // selectedScreenを更新（selectedScreenが存在していて、編集中の画面であれば更新）
-      const screenToUpdate = updatedScreens.find(
-        (screen) => screen.id === editingScreenId
-      );
-      if (screenToUpdate && selectedScreen?.id === editingScreenId) {
-        setSelectedScreen(screenToUpdate);
-      }
+      // selectedScreenも更新する
+      setSelectedScreen((prevScreen) => {
+        if (prevScreen && prevScreen.id === editingScreenId) {
+          return { ...prevScreen, html: editingHtml };
+        }
+        return prevScreen;
+      });
 
-      setIsEditingHtml(false);
-      setEditingScreenId(null);
+      // 状態の更新が反映されるのを待つ
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // 成功メッセージを表示
+      alert("HTMLが正常に保存されました。");
+    } else {
+      console.error("editingScreenId is null, no updates performed");
     }
+
+    // モーダルを閉じる（エラーの場合でも閉じる）
+    setIsEditingHtml(false);
+    setEditingScreenId(null);
   };
 
   // 問い合わせ情報を取得する useEffect を追加
@@ -596,7 +618,7 @@ const InquiryDetail: React.FC = () => {
                           key={screen.id}
                           className="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow"
                         >
-                          {editingScreenId === screen.id ? (
+                          {editingScreenNameId === screen.id ? (
                             <input
                               type="text"
                               value={screen.name}
@@ -606,14 +628,14 @@ const InquiryDetail: React.FC = () => {
                                   e.target.value
                                 )
                               }
-                              onBlur={() => setEditingScreenId(null)}
+                              onBlur={() => setEditingScreenNameId(null)}
                               className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 rounded p-2 focus:outline-none"
                               autoFocus
                             />
                           ) : (
                             <span
                               onDoubleClick={() =>
-                                setEditingScreenId(screen.id)
+                                setEditingScreenNameId(screen.id)
                               }
                               className="text-gray-700 dark:text-gray-200 cursor-pointer"
                             >
@@ -631,7 +653,14 @@ const InquiryDetail: React.FC = () => {
                             </button>
                             {/* HTML編集ボタン */}
                             <button
-                              onClick={() => startEditingHtml(screen)}
+                              onClick={() => {
+                                const currentScreen = screens.find(
+                                  (s) => s.id === screen.id
+                                );
+                                if (currentScreen) {
+                                  startEditingHtml(currentScreen);
+                                }
+                              }}
                               className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                               title="HTMLを編集"
                             >
@@ -712,7 +741,7 @@ const InquiryDetail: React.FC = () => {
                         </div>
                       ))}
                     </div>
-                    {/* イント追加タ */}
+                    {/* イベント追加ボタン */}
                     <button
                       onClick={addEvent}
                       className="mt-4 flex items-center px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -838,234 +867,228 @@ const InquiryDetail: React.FC = () => {
               {estimate && (
                 <div className="mt-4">
                   <h3 className="font-semibold mb-2">画面の見積もり</h3>
-                  {Object.entries(estimate.screens).map(
-                    ([screenName, screen], index) => (
-                      <div key={screenName} className="mb-2">
-                        <h4 className="font-medium">{screenName}</h4>
-                        <p>
-                          工数:{" "}
-                          {editingEstimateField ===
-                          `screen-${screenName}-workload` ? (
-                            <input
-                              type="text"
-                              value={editingEstimateValue}
-                              onChange={(e) =>
-                                setEditingEstimateValue(e.target.value)
-                              }
-                              onBlur={() => {
-                                const updatedEstimate = { ...estimate };
-                                updatedEstimate.screens[screenName].workload =
-                                  editingEstimateValue;
-                                setEstimate(updatedEstimate);
-                                setEditingEstimateField(null);
-                              }}
-                              className="border rounded p-1"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              onDoubleClick={() => {
-                                setEditingEstimateField(
-                                  `screen-${screenName}-workload`
-                                );
-                                setEditingEstimateValue(screen.workload);
-                              }}
-                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
-                            >
-                              {screen.workload}
-                            </span>
-                          )}
-                        </p>
-                        <p>
-                          難易度:{" "}
-                          {editingEstimateField ===
-                          `screen-${screenName}-difficulty` ? (
-                            <input
-                              type="number"
-                              value={editingEstimateValue}
-                              onChange={(e) =>
-                                setEditingEstimateValue(e.target.value)
-                              }
-                              onBlur={() => {
-                                const updatedEstimate = { ...estimate };
-                                updatedEstimate.screens[screenName].difficulty =
-                                  Number(editingEstimateValue);
-                                setEstimate(updatedEstimate);
-                                setEditingEstimateField(null);
-                              }}
-                              className="border rounded p-1"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              onDoubleClick={() => {
-                                setEditingEstimateField(
-                                  `screen-${screenName}-difficulty`
-                                );
-                                setEditingEstimateValue(
-                                  screen.difficulty.toString()
-                                );
-                              }}
-                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
-                            >
-                              {screen.difficulty}
-                            </span>
-                          )}
-                        </p>
-                        <p>
-                          テスト:{" "}
-                          {editingEstimateField ===
-                          `screen-${screenName}-tests` ? (
-                            <input
-                              type="text"
-                              value={editingEstimateValue}
-                              onChange={(e) =>
-                                setEditingEstimateValue(e.target.value)
-                              }
-                              onBlur={() => {
-                                const updatedEstimate = { ...estimate };
-                                updatedEstimate.screens[screenName].tests =
-                                  editingEstimateValue.split(", ");
-                                setEstimate(updatedEstimate);
-                                setEditingEstimateField(null);
-                              }}
-                              className="border rounded p-1 w-full"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              onDoubleClick={() => {
-                                setEditingEstimateField(
-                                  `screen-${screenName}-tests`
-                                );
-                                setEditingEstimateValue(
-                                  screen.tests.join(", ")
-                                );
-                              }}
-                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
-                            >
-                              {screen.tests.join(", ")}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    )
-                  )}
+                  {estimate.screens.map((screen, index) => (
+                    <div key={screen.name} className="mb-2">
+                      <h4 className="font-medium">{screen.name}</h4>
+                      <p>
+                        工数:{" "}
+                        {editingEstimateField ===
+                        `screen-${screen.name}-workload` ? (
+                          <input
+                            type="text"
+                            value={editingEstimateValue}
+                            onChange={(e) =>
+                              setEditingEstimateValue(e.target.value)
+                            }
+                            onBlur={() => {
+                              const updatedEstimate = { ...estimate };
+                              updatedEstimate.screens[index].workload =
+                                editingEstimateValue;
+                              setEstimate(updatedEstimate);
+                              setEditingEstimateField(null);
+                            }}
+                            className="border rounded p-1"
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            onDoubleClick={() => {
+                              setEditingEstimateField(
+                                `screen-${screen.name}-workload`
+                              );
+                              setEditingEstimateValue(screen.workload);
+                            }}
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                          >
+                            {screen.workload}
+                          </span>
+                        )}
+                      </p>
+                      <p>
+                        難易度:{" "}
+                        {editingEstimateField ===
+                        `screen-${screen.name}-difficulty` ? (
+                          <input
+                            type="number"
+                            value={editingEstimateValue}
+                            onChange={(e) =>
+                              setEditingEstimateValue(e.target.value)
+                            }
+                            onBlur={() => {
+                              const updatedEstimate = { ...estimate };
+                              updatedEstimate.screens[index].difficulty =
+                                Number(editingEstimateValue);
+                              setEstimate(updatedEstimate);
+                              setEditingEstimateField(null);
+                            }}
+                            className="border rounded p-1"
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            onDoubleClick={() => {
+                              setEditingEstimateField(
+                                `screen-${screen.name}-difficulty`
+                              );
+                              setEditingEstimateValue(
+                                screen.difficulty.toString()
+                              );
+                            }}
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                          >
+                            {screen.difficulty}
+                          </span>
+                        )}
+                      </p>
+                      <p>
+                        テスト:{" "}
+                        {editingEstimateField ===
+                        `screen-${screen.name}-tests` ? (
+                          <input
+                            type="text"
+                            value={editingEstimateValue}
+                            onChange={(e) =>
+                              setEditingEstimateValue(e.target.value)
+                            }
+                            onBlur={() => {
+                              const updatedEstimate = { ...estimate };
+                              updatedEstimate.screens[index].tests =
+                                editingEstimateValue.split(", ");
+                              setEstimate(updatedEstimate);
+                              setEditingEstimateField(null);
+                            }}
+                            className="border rounded p-1 w-full"
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            onDoubleClick={() => {
+                              setEditingEstimateField(
+                                `screen-${screen.name}-tests`
+                              );
+                              setEditingEstimateValue(screen.tests.join(", "));
+                            }}
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                          >
+                            {screen.tests.join(", ")}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  ))}
 
                   <h3 className="font-semibold mb-2 mt-4">
                     イベントの見積もり
                   </h3>
-                  {Object.entries(estimate.events).map(
-                    ([eventName, event], index) => (
-                      <div key={eventName} className="mb-2">
-                        <h4 className="font-medium">{eventName}</h4>
-                        <p>
-                          工数:{" "}
-                          {editingEstimateField ===
-                          `event-${eventName}-workload` ? (
-                            <input
-                              type="text"
-                              value={editingEstimateValue}
-                              onChange={(e) =>
-                                setEditingEstimateValue(e.target.value)
-                              }
-                              onBlur={() => {
-                                const updatedEstimate = { ...estimate };
-                                updatedEstimate.events[eventName].workload =
-                                  editingEstimateValue;
-                                setEstimate(updatedEstimate);
-                                setEditingEstimateField(null);
-                              }}
-                              className="border rounded p-1"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              onDoubleClick={() => {
-                                setEditingEstimateField(
-                                  `event-${eventName}-workload`
-                                );
-                                setEditingEstimateValue(event.workload);
-                              }}
-                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
-                            >
-                              {event.workload}
-                            </span>
-                          )}
-                        </p>
-                        <p>
-                          難易度:{" "}
-                          {editingEstimateField ===
-                          `event-${eventName}-difficulty` ? (
-                            <input
-                              type="number"
-                              value={editingEstimateValue}
-                              onChange={(e) =>
-                                setEditingEstimateValue(e.target.value)
-                              }
-                              onBlur={() => {
-                                const updatedEstimate = { ...estimate };
-                                updatedEstimate.events[eventName].difficulty =
-                                  Number(editingEstimateValue);
-                                setEstimate(updatedEstimate);
-                                setEditingEstimateField(null);
-                              }}
-                              className="border rounded p-1"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              onDoubleClick={() => {
-                                setEditingEstimateField(
-                                  `event-${eventName}-difficulty`
-                                );
-                                setEditingEstimateValue(
-                                  event.difficulty.toString()
-                                );
-                              }}
-                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
-                            >
-                              {event.difficulty}
-                            </span>
-                          )}
-                        </p>
-                        <p>
-                          テスト:{" "}
-                          {editingEstimateField ===
-                          `event-${eventName}-tests` ? (
-                            <input
-                              type="text"
-                              value={editingEstimateValue}
-                              onChange={(e) =>
-                                setEditingEstimateValue(e.target.value)
-                              }
-                              onBlur={() => {
-                                const updatedEstimate = { ...estimate };
-                                updatedEstimate.events[eventName].tests =
-                                  editingEstimateValue.split(", ");
-                                setEstimate(updatedEstimate);
-                                setEditingEstimateField(null);
-                              }}
-                              className="border rounded p-1 w-full"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              onDoubleClick={() => {
-                                setEditingEstimateField(
-                                  `event-${eventName}-tests`
-                                );
-                                setEditingEstimateValue(event.tests.join(", "));
-                              }}
-                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
-                            >
-                              {event.tests.join(", ")}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    )
-                  )}
+                  {estimate.events.map((event, index) => (
+                    <div key={event.name} className="mb-2">
+                      <h4 className="font-medium">{event.name}</h4>
+                      <p>
+                        工数:{" "}
+                        {editingEstimateField ===
+                        `event-${event.name}-workload` ? (
+                          <input
+                            type="text"
+                            value={editingEstimateValue}
+                            onChange={(e) =>
+                              setEditingEstimateValue(e.target.value)
+                            }
+                            onBlur={() => {
+                              const updatedEstimate = { ...estimate };
+                              updatedEstimate.events[index].workload =
+                                editingEstimateValue;
+                              setEstimate(updatedEstimate);
+                              setEditingEstimateField(null);
+                            }}
+                            className="border rounded p-1"
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            onDoubleClick={() => {
+                              setEditingEstimateField(
+                                `event-${event.name}-workload`
+                              );
+                              setEditingEstimateValue(event.workload);
+                            }}
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                          >
+                            {event.workload}
+                          </span>
+                        )}
+                      </p>
+                      <p>
+                        難易度:{" "}
+                        {editingEstimateField ===
+                        `event-${event.name}-difficulty` ? (
+                          <input
+                            type="number"
+                            value={editingEstimateValue}
+                            onChange={(e) =>
+                              setEditingEstimateValue(e.target.value)
+                            }
+                            onBlur={() => {
+                              const updatedEstimate = { ...estimate };
+                              updatedEstimate.events[index].difficulty =
+                                Number(editingEstimateValue);
+                              setEstimate(updatedEstimate);
+                              setEditingEstimateField(null);
+                            }}
+                            className="border rounded p-1"
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            onDoubleClick={() => {
+                              setEditingEstimateField(
+                                `event-${event.name}-difficulty`
+                              );
+                              setEditingEstimateValue(
+                                event.difficulty.toString()
+                              );
+                            }}
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                          >
+                            {event.difficulty}
+                          </span>
+                        )}
+                      </p>
+                      <p>
+                        テスト:{" "}
+                        {editingEstimateField ===
+                        `event-${event.name}-tests` ? (
+                          <input
+                            type="text"
+                            value={editingEstimateValue}
+                            onChange={(e) =>
+                              setEditingEstimateValue(e.target.value)
+                            }
+                            onBlur={() => {
+                              const updatedEstimate = { ...estimate };
+                              updatedEstimate.events[index].tests =
+                                editingEstimateValue.split(", ");
+                              setEstimate(updatedEstimate);
+                              setEditingEstimateField(null);
+                            }}
+                            className="border rounded p-1 w-full"
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            onDoubleClick={() => {
+                              setEditingEstimateField(
+                                `event-${event.name}-tests`
+                              );
+                              setEditingEstimateValue(event.tests.join(", "));
+                            }}
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                          >
+                            {event.tests.join(", ")}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  ))}
 
                   <h3 className="font-semibold mb-2 mt-4">
                     データベースの見積もり
