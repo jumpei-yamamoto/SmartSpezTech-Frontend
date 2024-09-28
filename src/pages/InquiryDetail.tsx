@@ -42,128 +42,10 @@ type EstimateResult = {
 };
 
 const InquiryDetail: React.FC = () => {
-  const [screens, setScreens] = useState<Screen[]>([
-    {
-      id: 1,
-      name: "ログイン画面",
-      html: `<div class="flex items-center justify-center min-h-screen bg-gray-100">
-              <div class="p-6 max-w-sm w-full bg-white shadow-md rounded-md">
-                <h1 class="text-2xl font-bold text-center text-gray-700 mb-4">ログイン</h1>
-                <form>
-                  <div class="mb-4">
-                    <label htmlFor="email" class="block text-sm font-medium text-gray-700">メールアドレス</label>
-                    <input type="email" id="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
-                  </div>
-                  <div class="mb-4">
-                    <label htmlFor="password" class="block text-sm font-medium text-gray-700">パスワード</label>
-                    <input type="password" id="password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
-                  </div>
-                  <button type="submit" class="w-full bg-indigo-600 text-white rounded-md py-2 px-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">ログイン</button>
-                </form>
-              </div>
-            </div>`,
-      events: ["ログインボタンクリック"],
-    },
-    {
-      id: 2,
-      name: "ダッシュボード",
-      html: `<div class="min-h-screen bg-gray-100">
-              <div class="p-6">
-                <h1 class="text-2xl font-bold text-gray-700 mb-4">ダッシュボード</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div class="bg-white p-4 rounded-md shadow">
-                    <h2 class="text-lg font-semibold mb-2">最近の注文</h2>
-                    <ul class="space-y-2">
-                      <li class="flex justify-between"><span>注文 #1234</span><span>¥10,000</span></li>
-                      <li class="flex justify-between"><span>注文 #1235</span><span>¥15,000</span></li>
-                    </ul>
-                  </div>
-                  <div class="bg-white p-4 rounded-md shadow">
-                    <h2 class="text-lg font-semibold mb-2">売上統計</h2>
-                    <div class="h-40 bg-gray-200 flex items-center justify-center">グラフ表示エア</div>
-                  </div>
-                  <div class="bg-white p-4 rounded-md shadow">
-                    <h2 class="text-lg font-semibold mb-2">タスク</h2>
-                    <ul class="space-y-2">
-                      <li class="flex items-center"><input type="checkbox" class="mr-2" /><span>在庫確認</span></li>
-                      <li class="flex items-center"><input type="checkbox" class="mr-2" /><span>発注処理</span></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>`,
-      events: ["注文詳細表示", "売上レポート生成", "タスク完了"],
-    },
-  ]);
-
-  const [eventsList, setEventsList] = useState<Event[]>([
-    {
-      id: 1,
-      name: "ログインボタンクリック",
-      screen: "ログイン画面",
-      process: "ユーザー認証を行い、成功したらダッシュボードに遷移",
-    },
-    {
-      id: 2,
-      name: "注文詳細表示",
-      screen: "ダッシュボード",
-      process: "選択された注文の詳細情報を表示",
-    },
-    {
-      id: 3,
-      name: "売上レポート生成",
-      screen: "ダッシュボード",
-      process: "指定期間の売上レポートをPDF形式で生成",
-    },
-    {
-      id: 4,
-      name: "タスク完了",
-      screen: "ダッシュボード",
-      process: "タスクを完了としてマークし、完了リストに移動",
-    },
-  ]);
-
-  const [entities, setEntities] = useState<Entity[]>([
-    {
-      id: 1,
-      name: "ユーザー",
-      attributes: [
-        "id: int",
-        "username: varchar(50)",
-        "email: varchar(100)",
-        "password: varchar(255)",
-        "created_at: timestamp",
-      ],
-    },
-    {
-      id: 2,
-      name: "注文",
-      attributes: [
-        "id: int",
-        "user_id: int",
-        "total_amount: decimal(10,2)",
-        "status: varchar(20)",
-        "created_at: timestamp",
-      ],
-    },
-    {
-      id: 3,
-      name: "商品",
-      attributes: [
-        "id: int",
-        "name: varchar(100)",
-        "description: text",
-        "price: decimal(10,2)",
-        "stock: int",
-      ],
-    },
-  ]);
-
-  const [relations, setRelations] = useState<Relation[]>([
-    { id: 1, from_: "ユーザー", to: "注文", type: "1:N" },
-    { id: 2, from_: "注文", to: "商品", type: "N:M" },
-  ]);
-
+  const [screens, setScreens] = useState<Screen[]>([]);
+  const [eventsList, setEventsList] = useState<Event[]>([]);
+  const [entities, setEntities] = useState<Entity[]>([]);
+  const [relations, setRelations] = useState<Relation[]>([]);
   const [selectedScreen, setSelectedScreen] = useState<Screen | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
@@ -525,8 +407,7 @@ const InquiryDetail: React.FC = () => {
           const formattedScreens = response.data.screens.map((screen: any) => ({
             id: screen.id,
             name: screen.title || `画面${screen.id}`,
-            html:
-              screen.preview || `<div>画面${screen.id}のデフォルトHTML</div>`,
+            html: screen.preview || "",
             events: screen.events || [],
           }));
           setScreens(formattedScreens);
@@ -540,6 +421,13 @@ const InquiryDetail: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching inquiry:", error);
+        // エラー時は各状態を空の配列または null に設定
+        setScreens([]);
+        setEventsList([]);
+        setEntities([]);
+        setRelations([]);
+        setEstimate(null);
+        setEditingEstimate(null);
       }
     };
 
