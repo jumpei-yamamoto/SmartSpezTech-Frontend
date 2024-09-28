@@ -40,7 +40,7 @@ interface Entity {
 
 interface Relation {
   id: number;
-  from: string;
+  from_: string;
   to: string;
   type: string;
 }
@@ -179,8 +179,8 @@ const InquiryDetail: React.FC = () => {
   ]);
 
   const [relations, setRelations] = useState<Relation[]>([
-    { id: 1, from: "ユーザー", to: "注文", type: "1:N" },
-    { id: 2, from: "注文", to: "商品", type: "N:M" },
+    { id: 1, from_: "ユーザー", to: "注文", type: "1:N" },
+    { id: 2, from_: "注文", to: "商品", type: "N:M" },
   ]);
 
   const [selectedScreen, setSelectedScreen] = useState<Screen | null>(null);
@@ -220,10 +220,20 @@ const InquiryDetail: React.FC = () => {
   const [editingRelationValue, setEditingRelationValue] = useState("");
 
   const [estimate, setEstimate] = useState<{
-    screens: { workload: string; difficulty: number; tests: string[] }[];
-    events: { workload: string; difficulty: number; tests: string[] }[];
+    screens: {
+      [key: string]: { workload: string; difficulty: number; tests: string[] };
+    };
+    events: {
+      [key: string]: { workload: string; difficulty: number; tests: string[] };
+    };
     database: { workload: string; difficulty: number; tests: string[] };
   } | null>(null);
+
+  // 新しいstate定義を追加
+  const [editingEstimateField, setEditingEstimateField] = useState<
+    string | null
+  >(null);
+  const [editingEstimateValue, setEditingEstimateValue] = useState("");
 
   const handleScreenTitleChange = (id: number, newName: string) => {
     setScreens((prevScreens) =>
@@ -242,39 +252,35 @@ const InquiryDetail: React.FC = () => {
   };
 
   const handleAiEstimate = async () => {
-    // 実際のAI統合ロジックに置き換えてください
-    // ここでは、モックデータを使用しています
-    const mockEstimate = {
-      screens: screens.map((screen) => ({
-        workload: `${Math.floor(Math.random() * 5) + 1}日`,
-        difficulty: Math.floor(Math.random() * 10) + 1,
-        tests: [
-          "レスポンシブデザインのテスト",
-          "クロスブラウザ互換性テスト",
-          "アクセシビリティテスト",
-        ],
-      })),
-      events: eventsList.map((event) => ({
-        workload: `${Math.floor(Math.random() * 3) + 1}日`,
-        difficulty: Math.floor(Math.random() * 10) + 1,
-        tests: [
-          "イベントトリガーのテスト",
-          "エラーハンドリングのテスト",
-          "パフォーマンステスト",
-        ],
-      })),
-      database: {
-        workload: `${Math.floor(Math.random() * 7) + 3}日`,
-        difficulty: Math.floor(Math.random() * 10) + 1,
-        tests: [
-          "データ整合性テスト",
-          "パフォーマンステスト",
-          "バックアップとリカバリテスト",
-        ],
-      },
+    const requestData = {
+      screens,
+      events: eventsList,
+      entities,
+      relations,
     };
 
-    setEstimate(mockEstimate);
+    try {
+      // サーバーにデータを送信して見積もり結果を取得する
+      const response = await axios.post(
+        `${apiBaseUrl}/api/estimate`, // 他のメソッドと同様に apiBaseUrl を利用
+        requestData,
+        {
+          withCredentials: false,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // サーバーからの見積もり結果をセット
+      if (response.status === 200) {
+        setEstimate(response.data);
+      } else {
+        console.error("見積もり取得に失敗しました。");
+      }
+    } catch (error) {
+      console.error("Error fetching AI estimate:", error);
+    }
   };
 
   const addScreen = () => {
@@ -310,7 +316,7 @@ const InquiryDetail: React.FC = () => {
     if (entities.length < 2) return; // リレーションを追加するには少なくも2つのエンティティが要
     const newRelation: Relation = {
       id: relations.length + 1,
-      from: entities[0].name,
+      from_: entities[0].name,
       to: entities[1].name,
       type: "1:N",
     };
@@ -338,7 +344,7 @@ const InquiryDetail: React.FC = () => {
       setRelations(
         relations.filter(
           (relation) =>
-            relation.from !== entityToRemove.name &&
+            relation.from_ !== entityToRemove.name &&
             relation.to !== entityToRemove.name
         )
       );
@@ -476,6 +482,22 @@ const InquiryDetail: React.FC = () => {
       setSelectedScreen({ ...selectedScreen, html: editingHtml });
     }
   }, [editingHtml, selectedScreen, editingScreenId]);
+
+  // AIレスポンスの編集を処理する新しい関数
+  const handleAiResponseEdit = (
+    field: "features" | "requirements",
+    index: number,
+    newValue: string
+  ) => {
+    setAiResponse((prevResponse) => {
+      const updatedField = [...prevResponse[field]];
+      updatedField[index] = newValue;
+      return {
+        ...prevResponse,
+        [field]: updatedField,
+      };
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -758,7 +780,7 @@ const InquiryDetail: React.FC = () => {
                           className="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow"
                         >
                           <span className="text-gray-800 dark:text-gray-200">
-                            {relation.from} - {relation.type} - {relation.to}
+                            {relation.from_} - {relation.type} - {relation.to}
                           </span>
                           <div className="flex space-x-2">
                             {/* 詳細表示ボタン */}
@@ -803,9 +825,9 @@ const InquiryDetail: React.FC = () => {
               </Tab.Group>
             </div>
 
-            {/* AIアシスタント */}
+            {/* 見積もり結果 */}
             <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">AIアシスタント</h2>
+              <h2 className="text-xl font-semibold mb-4">見積もり結果</h2>
               <button
                 onClick={handleAiEstimate}
                 className="w-full flex items-center justify-center mt-4 px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -814,57 +836,337 @@ const InquiryDetail: React.FC = () => {
                 AIで見積もる
               </button>
               {estimate && (
-                <div className="space-y-4 mt-4">
-                  <div>
-                    <h3 className="font-medium text-lg mb-2">
-                      画面デザイン見積もり：
-                    </h3>
-                    <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
-                      {estimate.screens.map((screen, index) => (
-                        <li key={index}>
-                          画面{index + 1}: 工数 {screen.workload}, 難易度{" "}
-                          {screen.difficulty}/10
-                          <ul className="list-circle pl-5">
-                            {screen.tests.map((test, testIndex) => (
-                              <li key={testIndex}>{test}</li>
-                            ))}
-                          </ul>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-lg mb-2">
-                      イベントフロー見積もり：
-                    </h3>
-                    <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
-                      {estimate.events.map((event, index) => (
-                        <li key={index}>
-                          イベント{index + 1}: 工数 {event.workload}, 難易度{" "}
-                          {event.difficulty}/10
-                          <ul className="list-circle pl-5">
-                            {event.tests.map((test, testIndex) => (
-                              <li key={testIndex}>{test}</li>
-                            ))}
-                          </ul>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-lg mb-2">
-                      DB設計見積もり：
-                    </h3>
-                    <p>
-                      工数 {estimate.database.workload}, 難易度{" "}
-                      {estimate.database.difficulty}/10
-                    </p>
-                    <ul className="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
-                      {estimate.database.tests.map((test, index) => (
-                        <li key={index}>{test}</li>
-                      ))}
-                    </ul>
-                  </div>
+                <div className="mt-4">
+                  <h3 className="font-semibold mb-2">画面の見積もり</h3>
+                  {Object.entries(estimate.screens).map(
+                    ([screenName, screen], index) => (
+                      <div key={screenName} className="mb-2">
+                        <h4 className="font-medium">{screenName}</h4>
+                        <p>
+                          工数:{" "}
+                          {editingEstimateField ===
+                          `screen-${screenName}-workload` ? (
+                            <input
+                              type="text"
+                              value={editingEstimateValue}
+                              onChange={(e) =>
+                                setEditingEstimateValue(e.target.value)
+                              }
+                              onBlur={() => {
+                                const updatedEstimate = { ...estimate };
+                                updatedEstimate.screens[screenName].workload =
+                                  editingEstimateValue;
+                                setEstimate(updatedEstimate);
+                                setEditingEstimateField(null);
+                              }}
+                              className="border rounded p-1"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() => {
+                                setEditingEstimateField(
+                                  `screen-${screenName}-workload`
+                                );
+                                setEditingEstimateValue(screen.workload);
+                              }}
+                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                            >
+                              {screen.workload}
+                            </span>
+                          )}
+                        </p>
+                        <p>
+                          難易度:{" "}
+                          {editingEstimateField ===
+                          `screen-${screenName}-difficulty` ? (
+                            <input
+                              type="number"
+                              value={editingEstimateValue}
+                              onChange={(e) =>
+                                setEditingEstimateValue(e.target.value)
+                              }
+                              onBlur={() => {
+                                const updatedEstimate = { ...estimate };
+                                updatedEstimate.screens[screenName].difficulty =
+                                  Number(editingEstimateValue);
+                                setEstimate(updatedEstimate);
+                                setEditingEstimateField(null);
+                              }}
+                              className="border rounded p-1"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() => {
+                                setEditingEstimateField(
+                                  `screen-${screenName}-difficulty`
+                                );
+                                setEditingEstimateValue(
+                                  screen.difficulty.toString()
+                                );
+                              }}
+                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                            >
+                              {screen.difficulty}
+                            </span>
+                          )}
+                        </p>
+                        <p>
+                          テスト:{" "}
+                          {editingEstimateField ===
+                          `screen-${screenName}-tests` ? (
+                            <input
+                              type="text"
+                              value={editingEstimateValue}
+                              onChange={(e) =>
+                                setEditingEstimateValue(e.target.value)
+                              }
+                              onBlur={() => {
+                                const updatedEstimate = { ...estimate };
+                                updatedEstimate.screens[screenName].tests =
+                                  editingEstimateValue.split(", ");
+                                setEstimate(updatedEstimate);
+                                setEditingEstimateField(null);
+                              }}
+                              className="border rounded p-1 w-full"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() => {
+                                setEditingEstimateField(
+                                  `screen-${screenName}-tests`
+                                );
+                                setEditingEstimateValue(
+                                  screen.tests.join(", ")
+                                );
+                              }}
+                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                            >
+                              {screen.tests.join(", ")}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    )
+                  )}
+
+                  <h3 className="font-semibold mb-2 mt-4">
+                    イベントの見積もり
+                  </h3>
+                  {Object.entries(estimate.events).map(
+                    ([eventName, event], index) => (
+                      <div key={eventName} className="mb-2">
+                        <h4 className="font-medium">{eventName}</h4>
+                        <p>
+                          工数:{" "}
+                          {editingEstimateField ===
+                          `event-${eventName}-workload` ? (
+                            <input
+                              type="text"
+                              value={editingEstimateValue}
+                              onChange={(e) =>
+                                setEditingEstimateValue(e.target.value)
+                              }
+                              onBlur={() => {
+                                const updatedEstimate = { ...estimate };
+                                updatedEstimate.events[eventName].workload =
+                                  editingEstimateValue;
+                                setEstimate(updatedEstimate);
+                                setEditingEstimateField(null);
+                              }}
+                              className="border rounded p-1"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() => {
+                                setEditingEstimateField(
+                                  `event-${eventName}-workload`
+                                );
+                                setEditingEstimateValue(event.workload);
+                              }}
+                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                            >
+                              {event.workload}
+                            </span>
+                          )}
+                        </p>
+                        <p>
+                          難易度:{" "}
+                          {editingEstimateField ===
+                          `event-${eventName}-difficulty` ? (
+                            <input
+                              type="number"
+                              value={editingEstimateValue}
+                              onChange={(e) =>
+                                setEditingEstimateValue(e.target.value)
+                              }
+                              onBlur={() => {
+                                const updatedEstimate = { ...estimate };
+                                updatedEstimate.events[eventName].difficulty =
+                                  Number(editingEstimateValue);
+                                setEstimate(updatedEstimate);
+                                setEditingEstimateField(null);
+                              }}
+                              className="border rounded p-1"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() => {
+                                setEditingEstimateField(
+                                  `event-${eventName}-difficulty`
+                                );
+                                setEditingEstimateValue(
+                                  event.difficulty.toString()
+                                );
+                              }}
+                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                            >
+                              {event.difficulty}
+                            </span>
+                          )}
+                        </p>
+                        <p>
+                          テスト:{" "}
+                          {editingEstimateField ===
+                          `event-${eventName}-tests` ? (
+                            <input
+                              type="text"
+                              value={editingEstimateValue}
+                              onChange={(e) =>
+                                setEditingEstimateValue(e.target.value)
+                              }
+                              onBlur={() => {
+                                const updatedEstimate = { ...estimate };
+                                updatedEstimate.events[eventName].tests =
+                                  editingEstimateValue.split(", ");
+                                setEstimate(updatedEstimate);
+                                setEditingEstimateField(null);
+                              }}
+                              className="border rounded p-1 w-full"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() => {
+                                setEditingEstimateField(
+                                  `event-${eventName}-tests`
+                                );
+                                setEditingEstimateValue(event.tests.join(", "));
+                              }}
+                              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                            >
+                              {event.tests.join(", ")}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    )
+                  )}
+
+                  <h3 className="font-semibold mb-2 mt-4">
+                    データベースの見積もり
+                  </h3>
+                  <p>
+                    工数:{" "}
+                    {editingEstimateField === "database-workload" ? (
+                      <input
+                        type="text"
+                        value={editingEstimateValue}
+                        onChange={(e) =>
+                          setEditingEstimateValue(e.target.value)
+                        }
+                        onBlur={() => {
+                          const updatedEstimate = { ...estimate };
+                          updatedEstimate.database.workload =
+                            editingEstimateValue;
+                          setEstimate(updatedEstimate);
+                          setEditingEstimateField(null);
+                        }}
+                        className="border rounded p-1"
+                        autoFocus
+                      />
+                    ) : (
+                      <span
+                        onDoubleClick={() => {
+                          setEditingEstimateField("database-workload");
+                          setEditingEstimateValue(estimate.database.workload);
+                        }}
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                      >
+                        {estimate.database.workload}
+                      </span>
+                    )}
+                  </p>
+                  <p>
+                    難易度:{" "}
+                    {editingEstimateField === "database-difficulty" ? (
+                      <input
+                        type="number"
+                        value={editingEstimateValue}
+                        onChange={(e) =>
+                          setEditingEstimateValue(e.target.value)
+                        }
+                        onBlur={() => {
+                          const updatedEstimate = { ...estimate };
+                          updatedEstimate.database.difficulty =
+                            Number(editingEstimateValue);
+                          setEstimate(updatedEstimate);
+                          setEditingEstimateField(null);
+                        }}
+                        className="border rounded p-1"
+                        autoFocus
+                      />
+                    ) : (
+                      <span
+                        onDoubleClick={() => {
+                          setEditingEstimateField("database-difficulty");
+                          setEditingEstimateValue(
+                            estimate.database.difficulty.toString()
+                          );
+                        }}
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                      >
+                        {estimate.database.difficulty}
+                      </span>
+                    )}
+                  </p>
+                  <p>
+                    テスト:{" "}
+                    {editingEstimateField === "database-tests" ? (
+                      <input
+                        type="text"
+                        value={editingEstimateValue}
+                        onChange={(e) =>
+                          setEditingEstimateValue(e.target.value)
+                        }
+                        onBlur={() => {
+                          const updatedEstimate = { ...estimate };
+                          updatedEstimate.database.tests =
+                            editingEstimateValue.split(", ");
+                          setEstimate(updatedEstimate);
+                          setEditingEstimateField(null);
+                        }}
+                        className="border rounded p-1 w-full"
+                        autoFocus
+                      />
+                    ) : (
+                      <span
+                        onDoubleClick={() => {
+                          setEditingEstimateField("database-tests");
+                          setEditingEstimateValue(
+                            estimate.database.tests.join(", ")
+                          );
+                        }}
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
+                      >
+                        {estimate.database.tests.join(", ")}
+                      </span>
+                    )}
+                  </p>
                 </div>
               )}
             </div>
@@ -1338,7 +1640,7 @@ const InquiryDetail: React.FC = () => {
                   <div className="mt-2">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       From:{" "}
-                      {editingRelationField === "from" ? (
+                      {editingRelationField === "from_" ? (
                         <input
                           type="text"
                           value={editingRelationValue}
@@ -1349,7 +1651,7 @@ const InquiryDetail: React.FC = () => {
                             if (selectedRelation) {
                               const updatedRelation = {
                                 ...selectedRelation,
-                                from: editingRelationValue,
+                                from_: editingRelationValue,
                               };
                               setRelations(
                                 relations.map((r) =>
@@ -1368,14 +1670,14 @@ const InquiryDetail: React.FC = () => {
                       ) : (
                         <span
                           onDoubleClick={() => {
-                            setEditingRelationField("from");
+                            setEditingRelationField("from_");
                             setEditingRelationValue(
-                              selectedRelation?.from || ""
+                              selectedRelation?.from_ || ""
                             );
                           }}
                           className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded"
                         >
-                          {selectedRelation?.from}
+                          {selectedRelation?.from_}
                         </span>
                       )}
                     </p>
