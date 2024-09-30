@@ -1,5 +1,3 @@
-// src/components/ScreenPreviewDialog.tsx
-
 import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Screen } from "../interfaces";
@@ -56,7 +54,7 @@ const ScreenPreviewDialog: React.FC<ScreenPreviewDialogProps> = ({
                 >
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: selectedScreen?.html || "",
+                      __html: selectedScreen?.html || "", // selectedScreenのHTMLを直接使用
                     }}
                   />
                 </div>

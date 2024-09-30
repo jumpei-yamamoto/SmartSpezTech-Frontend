@@ -176,8 +176,9 @@ const InquiryDetail: React.FC = () => {
     setIsEditingHtml(true);
   };
 
-  const saveHtmlChanges = async () => {
+  const saveHtmlChanges = () => {
     if (editingScreenId !== null) {
+      // スクリーンのHTMLを更新
       setScreens((prevScreens) =>
         prevScreens.map((screen) =>
           screen.id === editingScreenId
@@ -186,24 +187,13 @@ const InquiryDetail: React.FC = () => {
         )
       );
 
+      // 更新したスクリーンが現在選択中のスクリーンであれば、その選択状態も更新
       setSelectedScreen((prevScreen) => {
         if (prevScreen && prevScreen.id === editingScreenId) {
           return { ...prevScreen, html: editingHtml };
         }
         return prevScreen;
       });
-
-      // APIを呼び出してサーバー側でも更新を行う
-      try {
-        await axios.post(`${apiBaseUrl}/api/update-screen-html`, {
-          screenId: editingScreenId,
-          html: editingHtml,
-        });
-        alert("HTMLが正常に保存されました。");
-      } catch (error) {
-        console.error("Error saving HTML:", error);
-        alert("HTMLの保存中にエラーが発生しました。");
-      }
     } else {
       console.error("editingScreenId is null, no updates performed");
     }
@@ -433,12 +423,6 @@ const InquiryDetail: React.FC = () => {
 
     fetchInquiry();
   }, [apiBaseUrl]);
-
-  useEffect(() => {
-    if (selectedScreen && selectedScreen.id === editingScreenId) {
-      setSelectedScreen({ ...selectedScreen, html: editingHtml });
-    }
-  }, [editingHtml, selectedScreen, editingScreenId]);
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">

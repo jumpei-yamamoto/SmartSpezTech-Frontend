@@ -154,7 +154,7 @@ const SystemOrderSimulation: React.FC = () => {
       // 質問9のURLをanswersに統合
       const updatedAnswers = {
         ...answers,
-        9: urls.filter((url) => url.trim() !== ""),
+        // 9: urls.filter((url) => url.trim() !== ""),
       };
       const response = await axios.post(
         `${apiBaseUrl}/preview`,
