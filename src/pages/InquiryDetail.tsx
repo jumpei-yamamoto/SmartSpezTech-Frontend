@@ -29,15 +29,32 @@ import EntityDetailDialog from "../components/EntityDetailDialog";
 import RelationDetailDialog from "../components/RelationDetailDialog";
 import HtmlEditDialog from "../components/HTMLEditDialog";
 
-type ScreenEstimate = {
+type EventData = {
   workload: string;
-  difficulty: string;
+  hourly_rate: string;
   tests: string[];
+  [key: string]: string | string[];
+};
+
+type ScreenData = {
+  workload: string;
+  hourly_rate: string;
+  tests: string[];
+  [key: string]: string | string[]; // インデックスシグネチャを追加
 };
 
 type EstimateResult = {
   screens: {
-    [key: string]: ScreenEstimate;
+    [key: string]: ScreenData;
+  };
+  events?: {
+    [key: string]: EventData;
+  };
+  database?: {
+    workload?: string;
+    hourly_rate?: string;
+    tests: string[];
+    [key: string]: string | string[] | undefined;
   };
 };
 
@@ -68,8 +85,9 @@ const InquiryDetail: React.FC = () => {
     null
   );
   const [editingField, setEditingField] = useState<{
-    screenName: string;
-    field: "workload" | "difficulty" | "test";
+    section: "screens" | "events" | "database";
+    name: string;
+    field: string;
     index?: number;
   } | null>(null);
   const [editingValue, setEditingValue] = useState("");
@@ -100,7 +118,7 @@ const InquiryDetail: React.FC = () => {
     const newScreen: Screen = {
       id: newScreenId,
       name: `新規画面${newScreenId}`,
-      html: `<div class="min-h-screen bg-gray-100 p-6"><h1 class="text-2xl font-bold text-gray-700 mb-4">新規画面</h1><p>ここに画面の内容を追加してください。</p></div>`,
+      html: `<div class="min-h-screen bg-gray-100 p-6"><h1 class="text-2xl font-bold text-gray-700 mb-4">新規画面</h1><p>ここに画面の容を追加してください。</p></div>`,
       events: [],
     };
 
@@ -187,7 +205,7 @@ const InquiryDetail: React.FC = () => {
         )
       );
 
-      // 更新したスクリーンが現在選択中のスクリーンであれば、その選択状態も更新
+      // 更新したスクリーンが現在選択中のスクリーンであれば、その選択状態も更
       setSelectedScreen((prevScreen) => {
         if (prevScreen && prevScreen.id === editingScreenId) {
           return { ...prevScreen, html: editingHtml };
@@ -237,7 +255,7 @@ const InquiryDetail: React.FC = () => {
 
   const handleEstimateChange = (
     screenName: string,
-    field: "workload" | "difficulty",
+    field: "workload" | "hourly_rate",
     value: string
   ) => {
     setEditingEstimate((prev) => {
@@ -278,31 +296,83 @@ const InquiryDetail: React.FC = () => {
   };
 
   const handleDoubleClick = (
-    screenName: string,
-    field: "workload" | "difficulty" | "test",
+    section: "screens" | "events" | "database",
+    name: string,
+    field: string,
     index?: number
   ) => {
-    setEditingField({ screenName, field, index });
-    if (field === "test" && typeof index === "number") {
-      setEditingValue(editingEstimate?.screens[screenName]?.tests[index] || "");
-    } else if (field === "workload" || field === "difficulty") {
-      setEditingValue(editingEstimate?.screens[screenName]?.[field] || "");
-    } else {
-      setEditingValue("");
+    setEditingField({ section, name, field, index });
+    if (section === "screens") {
+      if (field === "test" && typeof index === "number") {
+        setEditingValue(editingEstimate?.screens[name]?.tests[index] || "");
+      } else {
+        setEditingValue(
+          editingEstimate?.screens[name]?.[
+            field as keyof ScreenData
+          ]?.toString() || ""
+        );
+      }
+    } else if (section === "events") {
+      if (field === "test" && typeof index === "number") {
+        setEditingValue(editingEstimate?.events?.[name]?.tests[index] || "");
+      } else {
+        setEditingValue(
+          editingEstimate?.events?.[name]?.[
+            field as keyof EventData
+          ]?.toString() || ""
+        );
+      }
+    } else if (section === "database") {
+      if (field === "test" && typeof index === "number") {
+        setEditingValue(editingEstimate?.database?.tests?.[index] || "");
+      } else {
+        const value = editingEstimate?.database?.[field];
+        setEditingValue(
+          Array.isArray(value) ? value.join(", ") : value?.toString() || ""
+        );
+      }
     }
   };
 
   const handleBlur = () => {
     if (editingField && editingEstimate) {
-      const { screenName, field, index } = editingField;
+      const { section, name, field, index } = editingField;
       const updatedEstimate = { ...editingEstimate };
 
-      if (field === "test" && typeof index === "number") {
-        updatedEstimate.screens[screenName].tests[index] = editingValue;
-      } else {
-        (updatedEstimate.screens[screenName].tests as Record<string, any>)[
-          field
-        ] = editingValue;
+      if (section === "screens") {
+        if (field === "test" && typeof index === "number") {
+          updatedEstimate.screens[name].tests[index] = editingValue;
+        } else {
+          (updatedEstimate.screens[name] as ScreenData)[
+            field as keyof ScreenData
+          ] = editingValue;
+        }
+      } else if (section === "events") {
+        if (!updatedEstimate.events) updatedEstimate.events = {};
+        if (!updatedEstimate.events[name]) {
+          updatedEstimate.events[name] = {
+            workload: "",
+            hourly_rate: "",
+            tests: [],
+          };
+        }
+        if (field === "test" && typeof index === "number") {
+          updatedEstimate.events[name].tests[index] = editingValue;
+        } else {
+          (updatedEstimate.events[name] as any)[field] = editingValue;
+        }
+      } else if (section === "database") {
+        if (!updatedEstimate.database) {
+          updatedEstimate.database = { tests: [] };
+        }
+        if (!updatedEstimate.database.tests) {
+          updatedEstimate.database.tests = [];
+        }
+        if (field === "test" && typeof index === "number") {
+          updatedEstimate.database.tests[index] = editingValue;
+        } else {
+          (updatedEstimate.database as any)[field] = editingValue;
+        }
       }
 
       setEditingEstimate(updatedEstimate);
@@ -436,7 +506,7 @@ const InquiryDetail: React.FC = () => {
             {inquiry ? (
               <>
                 <p>
-                  <strong>問い合わせ番号:</strong> {inquiry.id}
+                  <strong>問い合わせ番:</strong> {inquiry.id}
                 </p>
                 <p>
                   <strong>名前:</strong> {inquiry.name}
@@ -590,13 +660,15 @@ const InquiryDetail: React.FC = () => {
               </button>
               {editingEstimate && (
                 <div className="mt-4">
+                  <h3 className="font-semibold mt-4 mb-2">画面</h3>
                   {Object.entries(editingEstimate.screens).map(
                     ([screenName, screenData]) => (
-                      <div key={screenName}>
-                        <h3 className="font-semibold mt-2 mb-1">
+                      <div key={screenName} className="mb-4">
+                        <h4 className="font-semibold mt-2 mb-1">
                           {screenName}
-                        </h3>
-                        {editingField?.screenName === screenName &&
+                        </h4>
+                        {editingField?.section === "screens" &&
+                        editingField?.name === screenName &&
                         editingField?.field === "workload" ? (
                           <input
                             type="text"
@@ -609,15 +681,20 @@ const InquiryDetail: React.FC = () => {
                         ) : (
                           <span
                             onDoubleClick={() =>
-                              handleDoubleClick(screenName, "workload")
+                              handleDoubleClick(
+                                "screens",
+                                screenName,
+                                "workload"
+                              )
                             }
                             className="border rounded px-2 py-1 mb-1 w-full cursor-pointer inline-block"
                           >
                             {screenData.workload}
                           </span>
                         )}
-                        {editingField?.screenName === screenName &&
-                        editingField?.field === "difficulty" ? (
+                        {editingField?.section === "screens" &&
+                        editingField?.name === screenName &&
+                        editingField?.field === "hourly_rate" ? (
                           <input
                             type="text"
                             value={editingValue}
@@ -629,19 +706,97 @@ const InquiryDetail: React.FC = () => {
                         ) : (
                           <span
                             onDoubleClick={() =>
-                              handleDoubleClick(screenName, "difficulty")
+                              handleDoubleClick(
+                                "screens",
+                                screenName,
+                                "hourly_rate"
+                              )
                             }
                             className="border rounded px-2 py-1 mb-1 w-full cursor-pointer inline-block"
                           >
-                            {screenData.difficulty}
+                            {screenData.hourly_rate}
                           </span>
                         )}
-                        <h4 className="font-semibold mt-2 mb-1">テスト内容:</h4>
+                        <h5 className="font-semibold mt-2 mb-1">テスト内容:</h5>
                         <ul>
-                          {screenData.tests.map(
+                          {screenData.tests.map((test, index) => (
+                            <li key={index}>
+                              {editingField?.section === "screens" &&
+                              editingField?.name === screenName &&
+                              editingField?.field === "test" &&
+                              editingField?.index === index ? (
+                                <input
+                                  type="text"
+                                  value={editingValue}
+                                  onChange={(e) =>
+                                    setEditingValue(e.target.value)
+                                  }
+                                  onBlur={handleBlur}
+                                  autoFocus
+                                  className="border rounded px-2 py-1 mb-1 w-full"
+                                />
+                              ) : (
+                                <span
+                                  onDoubleClick={() =>
+                                    handleDoubleClick(
+                                      "screens",
+                                      screenName,
+                                      "test",
+                                      index
+                                    )
+                                  }
+                                  className="border rounded px-2 py-1 mb-1 w-full cursor-pointer inline-block"
+                                >
+                                  {test}
+                                </span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  )}
+
+                  <h3 className="font-semibold mt-4 mb-2">イベント</h3>
+                  {Object.entries(editingEstimate.events || {}).map(
+                    ([eventName, eventData]) => (
+                      <div key={eventName} className="mb-4">
+                        <h4 className="font-semibold mt-2 mb-1">{eventName}</h4>
+                        {["workload", "hourly_rate"].map((field) => (
+                          <div key={field}>
+                            {editingField?.section === "events" &&
+                            editingField?.name === eventName &&
+                            editingField?.field === field ? (
+                              <input
+                                type="text"
+                                value={editingValue}
+                                onChange={(e) =>
+                                  setEditingValue(e.target.value)
+                                }
+                                onBlur={handleBlur}
+                                autoFocus
+                                className="border rounded px-2 py-1 mb-1 w-full"
+                              />
+                            ) : (
+                              <span
+                                onDoubleClick={() =>
+                                  handleDoubleClick("events", eventName, field)
+                                }
+                                className="border rounded px-2 py-1 mb-1 w-full cursor-pointer inline-block"
+                              >
+                                {field === "workload" ? "工数: " : "難易度: "}
+                                {eventData[field as keyof EventData]}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                        <h5 className="font-semibold mt-2 mb-1">テスト内容:</h5>
+                        <ul>
+                          {eventData.tests.map(
                             (test: string, index: number) => (
                               <li key={index}>
-                                {editingField?.screenName === screenName &&
+                                {editingField?.section === "events" &&
+                                editingField?.name === eventName &&
                                 editingField?.field === "test" &&
                                 editingField?.index === index ? (
                                   <input
@@ -658,7 +813,8 @@ const InquiryDetail: React.FC = () => {
                                   <span
                                     onDoubleClick={() =>
                                       handleDoubleClick(
-                                        screenName,
+                                        "events",
+                                        eventName,
                                         "test",
                                         index
                                       )
@@ -675,6 +831,77 @@ const InquiryDetail: React.FC = () => {
                       </div>
                     )
                   )}
+
+                  <h3 className="font-semibold mt-4 mb-2">データベース</h3>
+                  {editingEstimate.database && (
+                    <div className="mb-4">
+                      {["workload", "hourly_rate"].map((field) => (
+                        <div key={field}>
+                          {editingField?.section === "database" &&
+                          editingField?.field === field ? (
+                            <input
+                              type="text"
+                              value={editingValue}
+                              onChange={(e) => setEditingValue(e.target.value)}
+                              onBlur={handleBlur}
+                              autoFocus
+                              className="border rounded px-2 py-1 mb-1 w-full"
+                            />
+                          ) : (
+                            <span
+                              onDoubleClick={() =>
+                                handleDoubleClick("database", "database", field)
+                              }
+                              className="border rounded px-2 py-1 mb-1 w-full cursor-pointer inline-block"
+                            >
+                              {field === "workload" ? "工数: " : "難易度: "}
+                              {editingEstimate.database &&
+                                editingEstimate.database[
+                                  field as keyof typeof editingEstimate.database
+                                ]}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                      <h5 className="font-semibold mt-2 mb-1">テスト内容:</h5>
+                      <ul>
+                        {editingEstimate.database.tests?.map(
+                          (test: string, index: number) => (
+                            <li key={index}>
+                              {editingField?.section === "database" &&
+                              editingField?.field === "test" &&
+                              editingField?.index === index ? (
+                                <input
+                                  type="text"
+                                  value={editingValue}
+                                  onChange={(e) =>
+                                    setEditingValue(e.target.value)
+                                  }
+                                  onBlur={handleBlur}
+                                  autoFocus
+                                  className="border rounded px-2 py-1 mb-1 w-full"
+                                />
+                              ) : (
+                                <span
+                                  onDoubleClick={() =>
+                                    handleDoubleClick(
+                                      "database",
+                                      "database",
+                                      "test",
+                                      index
+                                    )
+                                  }
+                                  className="border rounded px-2 py-1 mb-1 w-full cursor-pointer inline-block"
+                                >
+                                  {test}
+                                </span>
+                              )}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -682,10 +909,10 @@ const InquiryDetail: React.FC = () => {
 
           {/* 設計をエクスポート、受注、発注ボタン */}
           <div className="mt-8 flex space-x-4">
-            <button className="flex items-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+            {/* <button className="flex items-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
               <ArrowRight className="mr-2 h-4 w-4" />
               設計をエクスポート
-            </button>
+            </button> */}
             {inquiry && inquiry.status === 0 && (
               <button
                 className={`flex items-center px-4 py-2 bg-green-400 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 ${
