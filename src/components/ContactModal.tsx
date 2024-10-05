@@ -3,12 +3,12 @@ import { Mail, User, MessageSquare, Send } from "lucide-react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { PageData } from "./SystemPreview";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
-  simulationData: PageData[];
+  simulationData: PageData;
 }
 
 export default function ContactModal({
@@ -51,7 +51,7 @@ export default function ContactModal({
       if (response.status === 200) {
         console.log("お問い合わせが正常に送信されました");
         onClose();
-        navigate('/thanks'); // ThanksPageへリダイレクト
+        navigate("/thanks"); // ThanksPageへリダイレクト
       } else {
         console.error("お問い合わせの送信中にエラーが発生しました");
         alert("お問い合わせの送信中にエラーが発生しました。");
@@ -162,9 +162,6 @@ export default function ContactModal({
               )}
             </button>
           </form>
-          <p className="text-sm text-gray-500 mt-4 italic">
-            注意：お問い合わせ内容にシミュレーション結果が含まれる場合、その情報は保存されます。
-          </p>
         </div>
       </div>
     </div>

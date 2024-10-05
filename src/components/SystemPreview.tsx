@@ -1,78 +1,77 @@
-import { useEffect, useState } from "react";
-import {
-  Zap,
-  Monitor,
-  Smartphone,
-  ChevronLeft,
-  ChevronRight,
-  Info,
-} from "lucide-react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import ContactModal from "./ContactModal"; // ContactModalをインポート
+import ContactModal from "./ContactModal";
 
 // PageData インターフェースをここで定義
 export interface PageData {
-  title: string;
-  catchphrase: string;
-  description: string;
-  preview: string;
+  text: string;
+  html: string;
+  screen_description: string;
   answer: string;
 }
 
-// ComponentProps は使用されていないので削除可能です
-// interface ComponentProps {
-//   pageData: PageData[];
-// }
-
 export default function SystemPreview() {
-  // Renamed from Component to SystemPreview
-  // 編集: propsから削除
   const location = useLocation();
-  const [currentPage, setCurrentPage] = useState(0);
-  const simulationData: PageData[] = location.state?.simulationData || [];
-  const totalPages = simulationData.length;
+  const simulationData: PageData = location.state?.simulationData;
 
-  const [selectedElement, setSelectedElement] = useState<string | null>(null);
-  const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
-  useEffect(() => {
-    console.log("simulationData:", simulationData);
-    console.log("currentPage:", currentPage);
-  }, [simulationData, currentPage]);
+  const tailwindConfig = `
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {},
+        },
+      }
+    </script>
+  `;
 
-  const currentPageData = simulationData[currentPage];
+  const modifiedHtml = `
+    <!DOCTYPE html>
+    <html lang="ja">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.tailwindcss.com"></script>
+        ${tailwindConfig}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.3/cdn.min.js" defer></script>
+        <style>
+          body { 
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto;
+          }
+        </style>
+      </head>
+      <body class="bg-gray-100 text-gray-900 antialiased">
+        ${simulationData?.html || ""}
+      </body>
+    </html>
+  `;
 
-  const renderPreview = (preview: string) => {
-    const containerClass =
-      device === "desktop" ? "w-full max-w-4xl" : "w-full max-w-sm";
+  // formatDescription 関数を修正します
+  const formatDescription = (text: string) => {
+    if (!text) return "";
 
-    const previewClass = device === "desktop" ? "text-sm" : "text-xs";
+    // 各項目を分割します
+    const sections = text.split(/\d+\.\s/).filter(Boolean);
 
-    return (
-      <div
-        className={`bg-white p-4 rounded-lg shadow-sm overflow-auto max-h-[600px] mx-auto ${containerClass}`}
-      >
-        <pre
-          className={`whitespace-pre-wrap ${previewClass}`}
-          dangerouslySetInnerHTML={{ __html: preview }}
-        />
-      </div>
-    );
+    return sections
+      .map((section, index) => {
+        const [title, ...details] = section.split("\n");
+        return `${index + 1}. ${title.trim()}\n${details
+          .map((detail) => `   ${detail.trim()}`)
+          .join("\n")}`;
+      })
+      .join("\n\n");
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gray-50 relative">
       <header className="bg-white border-b p-4 flex items-center justify-center">
-        <h1 className="text-2xl font-bold mr-4">Webシステムプレビュー</h1>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-          onClick={() => setIsContactModalOpen(true)}
-        >
-          お問い合わせ
-        </button>
+        <h1 className="text-2xl font-bold">Webシステムプレビュー</h1>
       </header>
 
       <h2 className="text-center text-lg font-semibold text-gray-700 mt-4 px-4">
@@ -80,86 +79,62 @@ export default function SystemPreview() {
       </h2>
 
       <main className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="bg-white border p-6 mb-6 rounded-lg shadow-sm">
-            <h2 className="text-2xl font-bold mb-2 text-blue-600">
-              {currentPageData?.title || "No Title"}
-            </h2>
-            <p className="text-lg text-gray-600 mb-4">
-              {currentPageData?.catchphrase || "No Catchphrase"}
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">
+              システム概要
+            </h3>
+            <p className="text-base font-medium mb-4 text-gray-600 whitespace-pre-line">
+              {formatDescription(simulationData?.text) || "No Text"}
             </p>
-            <div className="flex items-start space-x-2 text-sm text-gray-500">
-              <Zap className="w-5 h-5 mt-0.5 text-yellow-500" />
-              <p>{currentPageData?.description || "No Description"}</p>
-            </div>
           </div>
         </div>
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex space-x-4">
-              <button
-                className={`px-4 py-2 rounded-lg ${
-                  device === "desktop"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-300"
-                }`}
-                onClick={() => setDevice("desktop")}
-              >
-                <Monitor className="w-4 h-4 mr-2 inline-block" />
-                デスクトップ
-              </button>
-              <button
-                className={`px-4 py-2 rounded-lg ${
-                  device === "mobile" ? "bg-blue-500 text-white" : "bg-gray-300"
-                }`}
-                onClick={() => setDevice("mobile")}
-              >
-                <Smartphone className="w-4 h-4 mr-2 inline-block" />
-                モバイル
-              </button>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded-lg"
-                onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-                disabled={currentPage === 0}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span>
-                {currentPage + 1} / {totalPages}
-              </span>
-              <button
-                className="px-4 py-2 bg-gray-300 rounded-lg"
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))
-                }
-                disabled={currentPage === totalPages - 1}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-white border rounded-lg overflow-hidden mb-6">
+            <h3 className="text-lg font-semibold p-4 bg-gray-50 border-b">
+              画面プレビュー
+            </h3>
+            <div style={{ height: "800px" }}>
+              <iframe
+                srcDoc={modifiedHtml}
+                className="w-full h-full border-none"
+                title="Preview"
+              />
             </div>
           </div>
 
-          <div className="relative border rounded-lg bg-white flex items-center justify-center overflow-hidden p-4">
-            {renderPreview(currentPageData?.preview || "No preview available")}
-          </div>
-
-          {selectedElement && (
+          {simulationData?.screen_description && (
             <div className="bg-white border p-4 rounded-lg mt-4">
-              <div className="flex items-center space-x-2">
-                <Info className="w-4 h-4 text-blue-500" />
-                <h3 className="text-lg font-semibold">
-                  {selectedElement}の説明
-                </h3>
-              </div>
-              <p className="mt-2 text-sm text-gray-600">
-                ここに選択された要素の詳細な説明が表示れます。機能、デザインの意図、主要な特徴などを記述します。
+              <h3 className="text-lg font-semibold mb-2">画面の説明</h3>
+              <p className="text-base text-gray-600 whitespace-pre-line">
+                {formatDescription(simulationData.screen_description)}
               </p>
             </div>
           )}
         </div>
       </main>
+
+      {/* 固定位置のお問い合わせボタン */}
+      <button
+        className="fixed bottom-8 right-8 px-6 py-3 bg-blue-500 text-white text-lg font-semibold rounded-full hover:bg-blue-600 transition-colors shadow-lg flex items-center space-x-2"
+        onClick={() => setIsContactModalOpen(true)}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+          />
+        </svg>
+        <span>お問い合わせ</span>
+      </button>
 
       <ContactModal
         isOpen={isContactModalOpen}

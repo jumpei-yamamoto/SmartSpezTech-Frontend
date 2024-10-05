@@ -33,24 +33,24 @@ const SystemOrderSimulation: React.FC = () => {
         "社内業務の効率化",
         "顧客サービスの向上",
         "売上・利益の増加",
-        "コスト削減",
-        "その他",
+        // "コスト削減",
+        // "その他",
       ],
       type: "radio",
     },
     {
       id: 2,
-      text: "システムに必要な主な機能は何ですか？（複数選択可）",
+      text: "システムに必要な主な機能は何ですか？",
       options: [
         "データ入力・管理",
         "レポート作成",
         "スケジュール管理",
-        "顧客管理",
-        "在庫管理",
-        "決済機能",
-        "その他",
+        // "顧客管理",
+        // "在庫管理",
+        // "決済機能",
+        // "その他",
       ],
-      type: "checkbox",
+      type: "radio",
     },
     {
       id: 3,
@@ -60,7 +60,7 @@ const SystemOrderSimulation: React.FC = () => {
     },
     {
       id: 4,
-      text: "システムで扱う主なデータは何ですか？（複数選択可）",
+      text: "システムで扱う主なデータは何ですか？",
       options: [
         "顧客情報",
         "売上データ",
@@ -69,7 +69,7 @@ const SystemOrderSimulation: React.FC = () => {
         "文書ファイル",
         "その他",
       ],
-      type: "checkbox",
+      type: "radio",
     },
     {
       id: 5,
@@ -100,11 +100,11 @@ const SystemOrderSimulation: React.FC = () => {
       ],
       type: "radio",
     },
-    {
-      id: 8,
-      text: "開発したいシステムを言語化するとどのようなシステムですか？簡潔に記載してください。（複数ある場合カンマ区切りで記述してください。）",
-      type: "text",
-    },
+    // {
+    //   id: 8,
+    //   text: "開発したいシステムを言語化するとどのようなシステムですか？簡潔に記載してください。（複数ある場合カンマ区切りで記述してください。）",
+    //   type: "text",
+    // },
   ];
 
   const handleNext = () => {
@@ -148,7 +148,53 @@ const SystemOrderSimulation: React.FC = () => {
     handleAnswer(11, validFiles);
   };
 
-  const estimateAnswers = async () => {
+  // const estimateAnswers = async () => {
+  //   setLoading(true);
+  //   try {
+  //     // 質問9のURLをanswersに統合
+  //     const updatedAnswers = {
+  //       ...answers,
+  //       // 9: urls.filter((url) => url.trim() !== ""),
+  //     };
+  //     const response = await axios.post(
+  //       `${apiBaseUrl}/preview`,
+  //       { answers: updatedAnswers },
+  //       {
+  //         withCredentials: false,
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     const simulationData = response.data;
+
+  //     console.log("response:", response);
+  //     console.log("response.data:", response.data);
+
+  //     // データをlocalStorageに保存
+  //     localStorage.setItem("simulationResults", JSON.stringify(simulationData));
+
+  //     console.log("simulationData元ページ:", simulationData);
+
+  //     // 結果画面に遷移
+  //     navigate("/system-preview", {
+  //       state: { simulationData },
+  //     });
+  //   } catch (error) {
+  //     if (axios.isAxiosError(error) && error.response?.status === 0) {
+  //       console.error("CORS エラーが発生しました:", error);
+  //       alert("CORS エラーが発生しました。サーバーの設定を確認してください。");
+  //     } else {
+  //       console.error("分析中にエラーが発生しました:", error);
+  //       alert("分析中にエラーが発生しました。");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const simulateAnswers = async () => {
     setLoading(true);
     try {
       // 質問9のURLをanswersに統合
@@ -157,7 +203,7 @@ const SystemOrderSimulation: React.FC = () => {
         // 9: urls.filter((url) => url.trim() !== ""),
       };
       const response = await axios.post(
-        `${apiBaseUrl}/preview`,
+        `${apiBaseUrl}/simulate`,
         { answers: updatedAnswers },
         {
           withCredentials: false,
@@ -198,7 +244,7 @@ const SystemOrderSimulation: React.FC = () => {
     const validUrls = urls.filter((url) => url.trim() !== "");
     const updatedAnswers = { ...answers, 9: validUrls };
     setAnswers(updatedAnswers);
-    estimateAnswers();
+    simulateAnswers();
   };
 
   const addUrlField = () => {
@@ -219,7 +265,10 @@ const SystemOrderSimulation: React.FC = () => {
   const currentQuestionData = questions[currentQuestion];
 
   const isCurrentQuestionAnswered = () => {
-    if (currentQuestion >= 8) return true; // 質問9と10は任意なので常にtrue
+    if (currentQuestion >= 8) {
+      // 最後の質問（質問8）の場合
+      return answers[currentQuestionData.id] !== undefined;
+    }
     const answer = answers[currentQuestionData.id];
     if (!answer) return false;
     if (Array.isArray(answer)) return answer.length > 0;
@@ -540,19 +589,18 @@ const SystemOrderSimulation: React.FC = () => {
         {currentQuestion === questions.length - 1 ? (
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || !isCurrentQuestionAnswered()}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "分析中..." : "見積もり"}
+            {loading ? "分析中..." : "シミュレーションを開始"}
           </button>
         ) : (
           <button
             onClick={handleNext}
-            disabled={currentQuestion < 9 && !isCurrentQuestionAnswered()}
+            disabled={!isCurrentQuestionAnswered()}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {currentQuestion >= 9 ? "スキップ" : "次へ"}{" "}
-            <ChevronRight className="inline-block ml-2 h-4 w-4" />
+            次へ <ChevronRight className="inline-block ml-2 h-4 w-4" />
           </button>
         )}
       </div>

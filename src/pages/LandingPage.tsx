@@ -354,7 +354,10 @@ export default function LandingPage() {
           <p className="text-xl mb-8">
             まずは無料でAI支援のシステム開発シミュレーションを体験してください
           </p>
-          <button className="bg-white text-blue-600 text-lg px-8 py-4 rounded-full hover:bg-gray-100 transition-colors">
+          <button
+            className="bg-white text-blue-600 text-lg px-8 py-4 rounded-full hover:bg-gray-100 transition-colors"
+            onClick={openSimulationModal}
+          >
             今すぐAIシミュレーション
           </button>
         </div>
@@ -412,7 +415,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-700 text-center">
-            <p>&copy; 2023 SmartSpezTech AI. All rights reserved.</p>
+            <p>&copy; 2024 SmartSpezTech AI. All rights reserved.</p>
           </div>
         </div>
       </footer>
