@@ -30,10 +30,10 @@ export default function UpdatedThanksPage() {
           </p>
         </div>
 
-        <a href="/landingpage" className="w-full">
+        <a href="/inquirylist" className="w-full">
           <button className="w-full flex items-center justify-center border border-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-50 transition">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            ホームページへ戻る
+            ホームページへ戻る(テスト環境のため管理画面へ遷移します)
           </button>
         </a>
       </motion.div>

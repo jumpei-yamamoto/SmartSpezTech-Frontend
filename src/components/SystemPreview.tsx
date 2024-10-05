@@ -51,22 +51,22 @@ export default function SystemPreview() {
     </html>
   `;
 
-  // formatDescription 関数を修正します
-  const formatDescription = (text: string) => {
-    if (!text) return "";
+  // // formatDescription 関数を修正します
+  // const formatDescription = (text: string) => {
+  //   if (!text) return "";
 
-    // 各項目を分割します
-    const sections = text.split(/\d+\.\s/).filter(Boolean);
+  //   // 各項目を分割します
+  //   const sections = text.split(/\d+\.\s/).filter(Boolean);
 
-    return sections
-      .map((section, index) => {
-        const [title, ...details] = section.split("\n");
-        return `${index + 1}. ${title.trim()}\n${details
-          .map((detail) => `   ${detail.trim()}`)
-          .join("\n")}`;
-      })
-      .join("\n\n");
-  };
+  //   return sections
+  //     .map((section, index) => {
+  //       const [title, ...details] = section.split("\n");
+  //       return `${index + 1}. ${title.trim()}\n${details
+  //         .map((detail) => `   ${detail.trim()}`)
+  //         .join("\n")}`;
+  //     })
+  //     .join("\n\n");
+  // };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 relative">
@@ -75,7 +75,8 @@ export default function SystemPreview() {
       </header>
 
       <h2 className="text-center text-lg font-semibold text-gray-700 mt-4 px-4">
-        AIによるシステムプレビューを表示しています。具体的な機能や詳細なお見積りをご希望の方は、ぜひお問い合わせボタンからご相談ください。
+        AIによるシステムプレビューを表示しています。
+        具体的な機能や詳細なお見積りをご希望の方は、ぜひお問い合わせボタンからご相談ください。
       </h2>
 
       <main className="flex-1 overflow-y-auto p-6">
@@ -85,14 +86,15 @@ export default function SystemPreview() {
               システム提案内容
             </h3>
             <p className="text-base font-medium mb-4 text-gray-600 whitespace-pre-line">
-              {formatDescription(simulationData?.text) || "No Text"}
+              {simulationData?.text || "No Text"}
+              {/* {formatDescription(simulationData?.text) || "No Text"} */}
             </p>
           </div>
         </div>
         <div className="max-w-6xl mx-auto">
           <div className="bg-white border rounded-lg overflow-hidden mb-6">
             <h3 className="text-lg font-semibold p-4 bg-gray-50 border-b">
-              画面プレビュー
+              画面プレビュー（サンプルのため一部機能のみ表示しております）
             </h3>
             <div style={{ height: "800px" }}>
               <iframe
@@ -107,7 +109,8 @@ export default function SystemPreview() {
             <div className="bg-white border p-4 rounded-lg mt-4">
               <h3 className="text-lg font-semibold mb-2">システムの説明</h3>
               <p className="text-base text-gray-600 whitespace-pre-line">
-                {formatDescription(simulationData.screen_description)}
+                {/* {formatDescription(simulationData.screen_description)} */}
+                {simulationData.screen_description}
               </p>
             </div>
           )}

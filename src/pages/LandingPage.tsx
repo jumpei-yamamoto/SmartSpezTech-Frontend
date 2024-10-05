@@ -59,9 +59,9 @@ export default function LandingPage() {
               よくある質問
             </a>
           </nav>
-          <button className="hidden md:inline-flex px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-600 hover:text-white transition-colors">
+          {/* <button className="hidden md:inline-flex px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-600 hover:text-white transition-colors">
             お問い合わせ
-          </button>
+          </button> */}
           <button
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -101,9 +101,9 @@ export default function LandingPage() {
             >
               よくある質問
             </a>
-            <button className="mt-4 w-full px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-600 hover:text-white transition-colors">
+            {/* <button className="mt-4 w-full px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-600 hover:text-white transition-colors">
               お問い合わせ
-            </button>
+            </button> */}
           </nav>
         )}
       </header>
@@ -183,7 +183,7 @@ export default function LandingPage() {
                 icon: Users,
                 title: "経験豊富な開発チーム",
                 description:
-                  "AI技術に精通した平均経験10年以上のエキスパートが、プロジェクトを成功に導きます。",
+                  "最先端技術に精通した豊富な経験を持つ開発チームが、プロジェクトの成功を支援します。",
               },
               {
                 icon: Rocket,
@@ -316,12 +316,12 @@ export default function LandingPage() {
               {
                 question: "AI開発のコストは従来の開発と比べてどうですか？",
                 answer:
-                  "初期投資は従来の開発より高くなる可能性がありますが、長期的には開発速度の向上、バグの削減、保守性の向上などにより、総合的なコストが低減されます。具体的なコストは、プロジェクトの規模と要件により異なりますので、お問い合わせください。",
+                  "AI開発の導入により、開発コストが大幅に削減されます。AIによる自動化と効率化により、開発時間が短縮され、人件費が抑えられます。また、早期のバグ検出とコード最適化により、長期的なメンテナンスコストも低減。結果として、従来の開発方法と比べて、プロジェクト全体で20〜40%のコスト削減が期待できます。具体的な削減額は、プロジェクトの規模と要件により異なりますので、詳細はお問い合わせください。",
               },
               {
                 question: "AIを使用しても、セキュリティは大丈夫ですか？",
                 answer:
-                  "セキュリティは最重要事項の一つです。AIを使用する際も、厳格なセキュリティプロトコルを適用し、データの暗号化、アクセス制御、定期的なセキュリティ監査を実施しています。さらに、AI自体もセキュリティ強化のツールとして活用し、潜在的な脆弱性の早期発見に役立てています。",
+                  "はい、セキュリティに関しても問題ありません。AIを使用する際も、データの保護と安全性を最優先に考え、最新のセキュリティ対策を実施しています。また、AIを活用してセキュリティをさらに強化し、システムの安全性を高めています。",
               },
             ].map((item, index) => (
               <div key={index} className="mb-4 border-b border-gray-200 pb-4">
@@ -409,9 +409,9 @@ export default function LandingPage() {
             <div>
               <h3 className="text-lg font-semibold mb-4">お問い合わせ</h3>
               <p>AI開発についてのご質問は、お気軽にご連絡ください。</p>
-              <button className="mt-4 px-4 py-2 border border-white text-white rounded hover:bg-white hover:text-gray-800 transition-colors">
+              {/* <button className="mt-4 px-4 py-2 border border-white text-white rounded hover:bg-white hover:text-gray-800 transition-colors">
                 お問い合わせ
-              </button>
+              </button> */}
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-700 text-center">

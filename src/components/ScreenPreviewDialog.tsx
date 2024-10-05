@@ -11,6 +11,41 @@ const ScreenPreviewDialog: React.FC<ScreenPreviewDialogProps> = ({
   selectedScreen,
   setSelectedScreen,
 }) => {
+  const tailwindConfig = `
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {},
+        },
+      }
+    </script>
+  `;
+
+  const modifiedHtml = `
+    <!DOCTYPE html>
+    <html lang="ja">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.tailwindcss.com"></script>
+        ${tailwindConfig}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.3/cdn.min.js" defer></script>
+        <style>
+          body { 
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto;
+          }
+        </style>
+      </head>
+      <body class="bg-gray-100 text-gray-900 antialiased">
+        ${selectedScreen?.html || ""}
+      </body>
+    </html>
+  `;
+
   return (
     <Transition appear show={selectedScreen !== null} as={Fragment}>
       <Dialog
@@ -49,13 +84,13 @@ const ScreenPreviewDialog: React.FC<ScreenPreviewDialogProps> = ({
                   {selectedScreen?.name} プレビュー
                 </Dialog.Title>
                 <div
-                  className="mt-4 border rounded-lg p-4 overflow-auto"
-                  style={{ maxHeight: "60vh" }}
+                  className="mt-4 border rounded-lg overflow-hidden"
+                  style={{ height: "60vh" }}
                 >
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: selectedScreen?.html || "", // selectedScreenのHTMLを直接使用
-                    }}
+                  <iframe
+                    srcDoc={modifiedHtml}
+                    className="w-full h-full border-none"
+                    title="Preview"
                   />
                 </div>
                 <div className="mt-4 flex justify-end">
