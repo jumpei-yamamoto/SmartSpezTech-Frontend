@@ -82,7 +82,7 @@ export default function SystemPreview() {
         <div className="max-w-6xl mx-auto">
           <div className="bg-white border p-6 mb-6 rounded-lg shadow-sm">
             <h3 className="text-lg font-semibold mb-4 text-gray-800">
-              システム概要
+              システム提案内容
             </h3>
             <p className="text-base font-medium mb-4 text-gray-600 whitespace-pre-line">
               {formatDescription(simulationData?.text) || "No Text"}
@@ -105,7 +105,7 @@ export default function SystemPreview() {
 
           {simulationData?.screen_description && (
             <div className="bg-white border p-4 rounded-lg mt-4">
-              <h3 className="text-lg font-semibold mb-2">画面の説明</h3>
+              <h3 className="text-lg font-semibold mb-2">システムの説明</h3>
               <p className="text-base text-gray-600 whitespace-pre-line">
                 {formatDescription(simulationData.screen_description)}
               </p>

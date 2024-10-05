@@ -28,7 +28,7 @@ const SystemOrderSimulation: React.FC = () => {
   const questions = [
     {
       id: 1,
-      text: "開発するシステムの主な目的は何ですか？",
+      text: "開の主な目的は何ですか？発するシステム",
       options: [
         "社内業務の効率化",
         "顧客サービスの向上",
